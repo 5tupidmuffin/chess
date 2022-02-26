@@ -2,7 +2,6 @@
   --darkplace: #d28c45;
   --lightplace: #ffcf9f;
   --selected: #ebc934;
-  --possible: #5cc72e;
   --kill: #eb4634;
 }
 
@@ -83,5 +82,12 @@ body {
 }
 
 .possible {
-  background-color: var(--possible) !important;
+  background-image: radial-gradient(
+    rgba(0, 0, 0, 0.2) 30%,
+    rgba(0, 0, 0, 0) 20%
+  );
+}
+
+.kill {
+  background-image: radial-gradient(rgba(0, 0, 0, 0) 60%, var(--kill) 90%);
 }
