@@ -63,19 +63,19 @@ body {
 }
 
 .row:nth-child(even) .box:nth-child(even) {
-  background-color: var(--darkplace);
+  background-color: var(--lightplace);
 }
 
 .row:nth-child(even) .box:nth-child(odd) {
-  background-color: var(--lightplace);
-}
-
-.row:nth-child(odd) .box:nth-child(odd) {
   background-color: var(--darkplace);
 }
 
-.row:nth-child(odd) .box:nth-child(even) {
+.row:nth-child(odd) .box:nth-child(odd) {
   background-color: var(--lightplace);
+}
+
+.row:nth-child(odd) .box:nth-child(even) {
+  background-color: var(--darkplace);
 }
 
 .selected {
