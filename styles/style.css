@@ -81,3 +81,7 @@ body {
 .selected {
   background-color: var(--selected) !important;
 }
+
+.possible {
+  background-color: var(--possible) !important;
+}
