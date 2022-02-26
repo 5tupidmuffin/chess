@@ -1,0 +1,72 @@
+:root {
+  --darkplace: #d28c45;
+  --lightplace: #ffcf9f;
+  --selected: #ebc934;
+  --possible: #5cc72e;
+  --kill: #eb4634;
+}
+
+html,
+body {
+  height: 100%;
+  width: 100%;
+  background-color: black;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+}
+
+.board {
+  height: 90vh;
+  width: 90vh;
+  border: 1px solid white;
+  padding: 2px;
+  display: flex;
+  flex-direction: column;
+}
+
+.row {
+  /* border: 1px solid black; */
+  height: 12.5%;
+  width: 99.8%;
+  display: flex;
+  border-left: 1px solid black;
+  border-right: 1px solid black;
+}
+
+.box {
+  height: 100%;
+  width: 12.5%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.row:first-child {
+  border-top: 1px solid black;
+}
+
+.row:last-child {
+  border-bottom: 1px solid black;
+}
+
+.row:nth-child(even) .box:nth-child(even) {
+  background-color: var(--darkplace);
+}
+
+.row:nth-child(even) .box:nth-child(odd) {
+  background-color: var(--lightplace);
+}
+
+.row:nth-child(odd) .box:nth-child(odd) {
+  background-color: var(--darkplace);
+}
+
+.row:nth-child(odd) .box:nth-child(even) {
+  background-color: var(--lightplace);
+}
+
+.selected {
+  background-color: var(--selected) !important;
+}
