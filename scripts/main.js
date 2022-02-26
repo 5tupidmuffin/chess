@@ -18,6 +18,7 @@ const piece_placed_sound = new Audio("./assets/sounds/piece_placed.mp3");
 // perform a move on click
 let pastBox = null;
 let child = null;
+let pastIndex = null;
 displayBoard.forEach((box, index) => {
   box.onclick = () => {
     // if a piece was selected previously
@@ -25,7 +26,9 @@ displayBoard.forEach((box, index) => {
       pastBox.classList.toggle("selected");
       if (box.children.length > 0) box.removeChild(box.children[0]);
       box.appendChild(pastBox.removeChild(child));
+      board[index] = board[pastIndex];
       piece_placed_sound.play();
+      board[pastIndex] = 0;
       pastBox = null;
       child = null;
       return;
@@ -35,6 +38,7 @@ displayBoard.forEach((box, index) => {
       box.classList.toggle("selected");
       pastBox = null;
       child = null;
+      pastIndex = null;
       return;
     }
     // if no piece was selected previously
@@ -42,6 +46,10 @@ displayBoard.forEach((box, index) => {
       box.classList.toggle("selected");
       child = box.children[0];
       pastBox = box;
+      pastIndex = index;
     }
   };
+  if (box.children.length === 0) {
+    box.textContent = index;
+  }
 });
