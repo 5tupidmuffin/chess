@@ -1,5 +1,7 @@
 ### References -
 
+- [ChessProgramming.org](https://www.chessprogramming.org/Board_Representation)
+
 #### Media -
 
 - Chess Pieces Images Taken from [Wikimedia Commons](https://commons.wikimedia.org/wiki/Category:PNG_chess_pieces/Standard_transparent).
