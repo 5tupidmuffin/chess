@@ -26,6 +26,17 @@ body {
   flex-direction: column;
 }
 
+@media screen and (max-width: 1000px) {
+  .board {
+    height: 90vw;
+    width: 90vw;
+  }
+
+  img {
+    height: 80%;
+  }
+}
+
 .row {
   /* border: 1px solid black; */
   height: 12.5%;
