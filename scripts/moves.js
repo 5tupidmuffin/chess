@@ -1,3 +1,5 @@
+import { board } from "./main.js";
+
 const getPieceType = (startPosition) => {
   // return type and color of piece based on position
   let piece = board[startPosition];
@@ -31,7 +33,7 @@ const getPieceType = (startPosition) => {
   return { color, type };
 };
 
-const getMoves = (startPosition) => {
+export const getMoves = (startPosition) => {
   let piece = getPieceType(startPosition);
   switch (piece.type) {
     case "queen":
@@ -86,7 +88,7 @@ const slidingMoves = (startPosition) => {
 
 // bishop and queen
 const diagonalMoves = (startPosition) => {
-  validMoves = [];
+  let validMoves = [];
   //   upper moves
   for (let i = startPosition - 9; i > 0; i -= 9) {
     if (board[i] !== 0) {

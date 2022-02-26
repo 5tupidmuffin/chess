@@ -1,8 +1,10 @@
+import { getMoves } from "./moves.js";
+
 const displayBoard = document.querySelectorAll(".box");
 
 // https://www.chess.com/terms/chess-piece-value
 // prettier-ignore
-const board = [
+export const board = [
   15, 13, 14, 19, 10, 14, 13, 15, // +10 to represent black pieces
   11, 11, 11, 11, 11, 11, 11, 11, 
   0,  0,  0,  0,  0,  0,  0,  0,  
