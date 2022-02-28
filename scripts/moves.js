@@ -172,13 +172,22 @@ const pawnMoves = (startPosition) => {
 };
 
 const knightMoves = (startPosition) => {
-  // generates invalid moves if knight is in a corner
   let validMoves = [];
   let values = [6, 10, 15, 17];
   for (let value of values) {
+    // countiue statements if piece is too near to side of board so as to prevent invalid moves
+    if (startPosition % 8 === 1 && value === 6) continue;
+    if (startPosition % 8 === 0 && (value === 6 || value === 15)) continue;
+    if (startPosition % 8 === 6 && value === 10) continue;
+    if (startPosition % 8 === 7 && (value === 10 || value === 17)) continue;
     if (startPosition + value <= 63) validMoves.push(startPosition + value);
   }
   for (let value of values) {
+    // countiue statements if piece is too near to side of board so as to prevent invalid moves
+    if (startPosition % 8 === 6 && value === 6) continue;
+    if (startPosition % 8 === 7 && (value === 6 || value === 15)) continue;
+    if (startPosition % 8 === 1 && value === 10) continue;
+    if (startPosition % 8 === 0 && (value === 10 || value === 17)) continue;
     if (startPosition - value >= 0) validMoves.push(startPosition - value);
   }
   return validMoves;
