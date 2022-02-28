@@ -26,6 +26,7 @@ displayBoard.forEach((box, index) => {
   box.onclick = () => {
     // if a piece was selected previously
     if (pastBox !== null && pastBox !== box) {
+      if (!highLightedPlaces.includes(index)) return; // highlightedPlaces === LegalMoves
       pastBox.classList.toggle("selected");
       highLightedPlaces.forEach((place) => {
         displayBoard[place].classList.toggle("possible");
