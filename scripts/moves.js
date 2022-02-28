@@ -91,26 +91,26 @@ const diagonalMoves = (startPosition) => {
   let validMoves = [];
   //   upper moves
   for (let i = startPosition - 9; i > 0; i -= 9) {
-    if (board[i] !== 0) {
+    if (board[i] !== 0 || i % 8 === 7) {
       break;
     }
     validMoves.push(i);
   }
   for (let i = startPosition - 7; i > 0; i -= 7) {
-    if (board[i] !== 0) {
+    if (board[i] !== 0 || i % 8 === 0) {
       break;
     }
     validMoves.push(i);
   }
   //   lower moves
   for (let i = startPosition + 9; i < 64; i += 9) {
-    if (board[i] !== 0) {
+    if (board[i] !== 0 || i % 8 === 0) {
       break;
     }
     validMoves.push(i);
   }
   for (let i = startPosition + 7; i < 64; i += 7) {
-    if (board[i] !== 0) {
+    if (board[i] !== 0 || i % 8 === 7) {
       break;
     }
     validMoves.push(i);
