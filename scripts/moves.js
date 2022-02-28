@@ -133,7 +133,8 @@ const pawnMoves = (startPosition) => {
     }
     validMoves.push(startPosition - 8);
     // if first move
-    // validMoves.push(startPosition - 16);
+    if (Math.floor(startPosition / 8) === 6)
+      validMoves.push(startPosition - 16);
 
     // kills
     if (
@@ -152,7 +153,8 @@ const pawnMoves = (startPosition) => {
     }
     validMoves.push(startPosition + 8);
     // if first move
-    // validMoves.push(startPosition + 16);
+    if (Math.floor(startPosition / 8) === 1)
+      validMoves.push(startPosition + 16);
 
     // kills
     if (
