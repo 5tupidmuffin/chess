@@ -104,32 +104,48 @@ const slidingMoves = (startPosition) => {
 
 // bishop and queen
 const diagonalMoves = (startPosition) => {
-  let validMoves = [];
+  let validMoves = {
+    moves: [],
+    kills: [],
+  };
+  const self = getPieceType(startPosition);
   //   upper moves
   for (let i = startPosition - 9; i > 0; i -= 9) {
     if (board[i] !== 0 || i % 8 === 7) {
+      if (getPieceType(i).color !== self.color && i % 8 !== 7) {
+        validMoves.kills.push(i);
+      }
       break;
     }
-    validMoves.push(i);
+    validMoves.moves.push(i);
   }
   for (let i = startPosition - 7; i > 0; i -= 7) {
     if (board[i] !== 0 || i % 8 === 0) {
+      if (getPieceType(i).color !== self.color && i % 8 !== 0) {
+        validMoves.kills.push(i);
+      }
       break;
     }
-    validMoves.push(i);
+    validMoves.moves.push(i);
   }
   //   lower moves
   for (let i = startPosition + 9; i < 64; i += 9) {
     if (board[i] !== 0 || i % 8 === 0) {
+      if (getPieceType(i).color !== self.color && i % 8 !== 0) {
+        validMoves.kills.push(i);
+      }
       break;
     }
-    validMoves.push(i);
+    validMoves.moves.push(i);
   }
   for (let i = startPosition + 7; i < 64; i += 7) {
     if (board[i] !== 0 || i % 8 === 7) {
+      if (getPieceType(i).color !== self.color && i % 8 !== 7) {
+        validMoves.kills.push(i);
+      }
       break;
     }
-    validMoves.push(i);
+    validMoves.moves.push(i);
   }
   return validMoves;
 };
