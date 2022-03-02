@@ -126,47 +126,52 @@ const pawnMoves = (startPosition) => {
     */
 
   const piece = getPieceType(startPosition);
-  const validMoves = [];
+  const validMoves = {
+    moves: [],
+    kills: [],
+  };
   if (piece.color === "white") {
     if (startPosition - 8 < 0) {
       //   promotion
     }
-    if (board[startPosition - 8] === 0) validMoves.push(startPosition - 8);
+    if (board[startPosition - 8] === 0)
+      validMoves.moves.push(startPosition - 8);
     // if first move
     if (Math.floor(startPosition / 8) === 6 && board[startPosition - 16] === 0)
-      validMoves.push(startPosition - 16);
+      validMoves.moves.push(startPosition - 16);
 
     // kills
     if (
       board[startPosition - 9] !== 0 &&
       getPieceType(startPosition - 9).color !== piece.color
     )
-      validMoves.push(startPosition - 9);
+      validMoves.kills.push(startPosition - 9);
     if (
       board[startPosition - 7] !== 0 &&
       getPieceType(startPosition - 7).color !== piece.color
     )
-      validMoves.push(startPosition - 7);
+      validMoves.kills.push(startPosition - 7);
   } else {
     if (startPosition + 8 >= 63) {
       //   promotion
     }
-    if (board[startPosition + 8] === 0) validMoves.push(startPosition + 8);
+    if (board[startPosition + 8] === 0)
+      validMoves.moves.push(startPosition + 8);
     // if first move
     if (Math.floor(startPosition / 8) === 1 && board[startPosition + 16] === 0)
-      validMoves.push(startPosition + 16);
+      validMoves.moves.push(startPosition + 16);
 
     // kills
     if (
       board[startPosition + 9] !== 0 &&
       getPieceType(startPosition + 9).color !== piece.color
     )
-      validMoves.push(startPosition + 9);
+      validMoves.kills.push(startPosition + 9);
     if (
       board[startPosition + 7] !== 0 &&
       getPieceType(startPosition + 7).color !== piece.color
     )
-      validMoves.push(startPosition + 7);
+      validMoves.kills.push(startPosition + 7);
   }
   return validMoves;
 };

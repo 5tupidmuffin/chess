@@ -21,15 +21,25 @@ const piece_placed_sound = new Audio("./assets/sounds/piece_placed.mp3");
 let pastBox = null;
 let child = null;
 let pastIndex = null;
-let highLightedPlaces = [];
+let highLightedPlaces = {
+  moves: [],
+  kills: [],
+};
 displayBoard.forEach((box, index) => {
   box.onclick = () => {
     // if a piece was selected previously
     if (pastBox !== null && pastBox !== box) {
-      if (!highLightedPlaces.includes(index)) return; // highlightedPlaces === LegalMoves
+      if (
+        !highLightedPlaces.moves.includes(index) &&
+        !highLightedPlaces.kills.includes(index)
+      )
+        return; // highlightedPlaces === LegalMoves
       pastBox.classList.toggle("selected");
-      highLightedPlaces.forEach((place) => {
+      highLightedPlaces.moves.forEach((place) => {
         displayBoard[place].classList.toggle("possible");
+      });
+      highLightedPlaces.kills.forEach((place) => {
+        displayBoard[place].classList.toggle("kill");
       });
       if (box.children.length > 0) box.removeChild(box.children[0]);
       box.appendChild(pastBox.removeChild(child));
@@ -43,8 +53,11 @@ displayBoard.forEach((box, index) => {
     // if selected piece is selected again
     if (pastBox !== null) {
       box.classList.toggle("selected");
-      highLightedPlaces.forEach((place) => {
+      highLightedPlaces.moves.forEach((place) => {
         displayBoard[place].classList.toggle("possible");
+      });
+      highLightedPlaces.kills.forEach((place) => {
+        displayBoard[place].classList.toggle("kill");
       });
       pastBox = null;
       child = null;
@@ -55,8 +68,11 @@ displayBoard.forEach((box, index) => {
     if (box.children.length > 0) {
       box.classList.toggle("selected");
       highLightedPlaces = getMoves(index);
-      highLightedPlaces.forEach((place) => {
+      highLightedPlaces.moves.forEach((place) => {
         displayBoard[place].classList.toggle("possible");
+      });
+      highLightedPlaces.kills.forEach((place) => {
+        displayBoard[place].classList.toggle("kill");
       });
       child = box.children[0];
       pastBox = box;
