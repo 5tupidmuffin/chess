@@ -125,46 +125,46 @@ const pawnMoves = (startPosition) => {
         - implement en passant
     */
 
-  let piece = getPieceType(startPosition);
+  const piece = getPieceType(startPosition);
   const validMoves = [];
   if (piece.color === "white") {
     if (startPosition - 8 < 0) {
       //   promotion
     }
-    validMoves.push(startPosition - 8);
+    if (board[startPosition - 8] === 0) validMoves.push(startPosition - 8);
     // if first move
-    if (Math.floor(startPosition / 8) === 6)
+    if (Math.floor(startPosition / 8) === 6 && board[startPosition - 16] === 0)
       validMoves.push(startPosition - 16);
 
     // kills
     if (
       board[startPosition - 9] !== 0 &&
-      getPieceType(board[startPosition - 9]).color !== piece.color
+      getPieceType(startPosition - 9).color !== piece.color
     )
       validMoves.push(startPosition - 9);
     if (
       board[startPosition - 7] !== 0 &&
-      getPieceType(board[startPosition - 7]).color !== piece.color
+      getPieceType(startPosition - 7).color !== piece.color
     )
       validMoves.push(startPosition - 7);
   } else {
     if (startPosition + 8 >= 63) {
       //   promotion
     }
-    validMoves.push(startPosition + 8);
+    if (board[startPosition + 8] === 0) validMoves.push(startPosition + 8);
     // if first move
-    if (Math.floor(startPosition / 8) === 1)
+    if (Math.floor(startPosition / 8) === 1 && board[startPosition + 16] === 0)
       validMoves.push(startPosition + 16);
 
     // kills
     if (
       board[startPosition + 9] !== 0 &&
-      getPieceType(board[startPosition + 9]).color !== piece.color
+      getPieceType(startPosition + 9).color !== piece.color
     )
       validMoves.push(startPosition + 9);
     if (
       board[startPosition + 7] !== 0 &&
-      getPieceType(board[startPosition + 7]).color !== piece.color
+      getPieceType(startPosition + 7).color !== piece.color
     )
       validMoves.push(startPosition + 7);
   }
