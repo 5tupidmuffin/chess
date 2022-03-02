@@ -54,33 +54,49 @@ export const getMoves = (startPosition) => {
 
 // for rook and queen
 const slidingMoves = (startPosition) => {
-  let validMoves = [];
+  let validMoves = {
+    moves: [],
+    kills: [],
+  };
+  const self = getPieceType(startPosition);
   //horizontal moves
   for (let i = startPosition + 1; i % 8 !== 0; i++) {
     if (board[i] !== 0 || i > 63) {
+      if (getPieceType(i).color !== self.color) {
+        validMoves.kills.push(i);
+      }
       break;
     }
-    validMoves.push(i);
+    validMoves.moves.push(i);
   }
   for (let i = startPosition - 1; i % 8 !== 7; i--) {
     if (board[i] !== 0 || i < 0) {
+      if (getPieceType(i).color !== self.color) {
+        validMoves.kills.push(i);
+      }
       break;
     }
-    validMoves.push(i);
+    validMoves.moves.push(i);
   }
 
   //vertical moves
-  for (let i = startPosition + 8; i < 63; i += 8) {
+  for (let i = startPosition + 8; i <= 63; i += 8) {
     if (board[i] !== 0) {
+      if (getPieceType(i).color !== self.color) {
+        validMoves.kills.push(i);
+      }
       break;
     }
-    validMoves.push(i);
+    validMoves.moves.push(i);
   }
-  for (let i = startPosition - 8; i > 0; i -= 8) {
+  for (let i = startPosition - 8; i >= 0; i -= 8) {
     if (board[i] !== 0) {
+      if (getPieceType(i).color !== self.color) {
+        validMoves.kills.push(i);
+      }
       break;
     }
-    validMoves.push(i);
+    validMoves.moves.push(i);
   }
 
   return validMoves;
