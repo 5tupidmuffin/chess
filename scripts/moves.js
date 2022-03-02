@@ -37,7 +37,12 @@ export const getMoves = (startPosition) => {
   let piece = getPieceType(startPosition);
   switch (piece.type) {
     case "queen":
-      return slidingMoves(startPosition).concat(diagonalMoves(startPosition));
+      const sliding = slidingMoves(startPosition),
+        diagonal = diagonalMoves(startPosition);
+      return {
+        moves: sliding.moves.concat(diagonal.moves),
+        kills: sliding.kills.concat(diagonal.kills),
+      };
     case "knight":
       return knightMoves(startPosition);
     case "rook":
