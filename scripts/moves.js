@@ -50,7 +50,7 @@ export const getMoves = (startPosition) => {
     case "bishop":
       return diagonalMoves(startPosition);
     case "king":
-      return [];
+      return kingMoves(startPosition);
     default:
       // pawn
       return pawnMoves(startPosition);
@@ -251,6 +251,31 @@ const knightMoves = (startPosition) => {
         if (getPieceType(startPosition - value).color !== self.color)
           validMoves.kills.push(startPosition - value);
         continue;
+      }
+    }
+  }
+  return validMoves;
+};
+
+const kingMoves = (startPosition) => {
+  console.log("here");
+  let validMoves = {
+    moves: [],
+    kills: [],
+  };
+
+  const self = getPieceType(startPosition);
+  let values = [1, -1, 8, -8, 7, -7, 9, -9];
+
+  for (let value of values) {
+    const position = startPosition + value;
+    if (position <= 63 && position >= 0) {
+      if (board[position] === 0) {
+        validMoves.moves.push(position);
+        continue;
+      }
+      if (getPieceType(position).color !== self.color) {
+        validMoves.kills.push(position);
       }
     }
   }
