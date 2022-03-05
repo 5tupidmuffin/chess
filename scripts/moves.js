@@ -1,6 +1,6 @@
 import { board } from "./main.js";
 
-const getPieceType = (startPosition) => {
+export const getPieceType = (startPosition) => {
   // return type and color of piece based on position
   let piece = board[startPosition];
   let color = piece >= 20 ? "white" : "black";
@@ -269,6 +269,7 @@ const kingMoves = (startPosition) => {
   let validMoves = {
     moves: [],
     kills: [],
+    castling: {},
   };
 
   const self = getPieceType(startPosition);
@@ -307,6 +308,10 @@ const kingMoves = (startPosition) => {
         if (board[i] !== 0) continue out; // continue outer loop
       }
       validMoves.moves.push(startPosition + 2);
+      validMoves.castling[startPosition + 2] = {
+        side: "right",
+        rook: position,
+      };
     }
 
     if (position === 0 || position === 56) {
@@ -315,6 +320,10 @@ const kingMoves = (startPosition) => {
         if (board[i] !== 0) continue out; // continue outer loop
       }
       validMoves.moves.push(startPosition - 2);
+      validMoves.castling[startPosition - 2] = {
+        side: "left",
+        rook: position,
+      };
     }
   }
 

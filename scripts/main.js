@@ -1,4 +1,4 @@
-import { getMoves } from "./moves.js";
+import { getMoves, getPieceType } from "./moves.js";
 
 const displayBoard = document.querySelectorAll(".box");
 
@@ -44,6 +44,44 @@ displayBoard.forEach((box, index) => {
         !highLightedPlaces.kills.includes(index)
       )
         return; // highlightedPlaces === LegalMoves
+      if (
+        getPieceType(pastIndex).type === "king" &&
+        Math.abs(index - pastIndex) === 2
+      ) {
+        // its a castling move
+        let castlingData = highLightedPlaces.castling;
+        box.appendChild(pastBox.removeChild(child)); // move the king
+        board[index] = board[pastIndex];
+        board[pastIndex] = 0;
+
+        if (castlingData?.[index]?.side === "left") {
+          // castling on the left side
+          displayBoard[index + 1].appendChild(
+            displayBoard[castlingData?.[index]?.rook].removeChild(
+              displayBoard[castlingData?.[index]?.rook].children[0]
+            )
+          );
+          // update board representation
+          board[index + 1] = board[castlingData?.[index]?.rook];
+          board[castlingData?.[index]?.rook] = 0;
+        } else {
+          // castling on the right side
+          displayBoard[index - 1].appendChild(
+            displayBoard[castlingData?.[index]?.rook].removeChild(
+              displayBoard[castlingData?.[index]?.rook].children[0]
+            )
+          );
+          // update board representation
+          board[index - 1] = board[castlingData?.[index]?.rook];
+          board[castlingData?.[index]?.rook] = 0;
+        }
+        updateHighlights();
+        pastBox.classList.toggle("selected");
+        piece_placed_sound.play();
+        pastBox = null;
+        child = null;
+        return;
+      }
       pastBox.classList.toggle("selected");
       updateHighlights();
       if (box.children.length > 0) box.removeChild(box.children[0]);
