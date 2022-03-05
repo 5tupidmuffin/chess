@@ -174,7 +174,11 @@ const pawnMoves = (startPosition) => {
     if (board[startPosition - 8] === 0)
       validMoves.moves.push(startPosition - 8);
     // if first move
-    if (Math.floor(startPosition / 8) === 6 && board[startPosition - 16] === 0)
+    if (
+      Math.floor(startPosition / 8) === 6 &&
+      board[startPosition - 8] === 0 &&
+      board[startPosition - 16] === 0
+    )
       validMoves.moves.push(startPosition - 16);
 
     // kills
@@ -195,7 +199,11 @@ const pawnMoves = (startPosition) => {
     if (board[startPosition + 8] === 0)
       validMoves.moves.push(startPosition + 8);
     // if first move
-    if (Math.floor(startPosition / 8) === 1 && board[startPosition + 16] === 0)
+    if (
+      Math.floor(startPosition / 8) === 1 &&
+      board[startPosition + 8] === 0 &&
+      board[startPosition + 16] === 0
+    )
       validMoves.moves.push(startPosition + 16);
 
     // kills
