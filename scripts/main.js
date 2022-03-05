@@ -17,6 +17,16 @@ export const board = [
 
 const piece_placed_sound = new Audio("./assets/sounds/piece_placed.mp3");
 
+const updateHighlights = () => {
+  // update highlighted moves and kills
+  highLightedPlaces.moves.forEach((place) => {
+    displayBoard[place].classList.toggle("possible");
+  });
+  highLightedPlaces.kills.forEach((place) => {
+    displayBoard[place].classList.toggle("kill");
+  });
+};
+
 // perform a move on click
 let pastBox = null;
 let child = null;
@@ -35,12 +45,7 @@ displayBoard.forEach((box, index) => {
       )
         return; // highlightedPlaces === LegalMoves
       pastBox.classList.toggle("selected");
-      highLightedPlaces.moves.forEach((place) => {
-        displayBoard[place].classList.toggle("possible");
-      });
-      highLightedPlaces.kills.forEach((place) => {
-        displayBoard[place].classList.toggle("kill");
-      });
+      updateHighlights();
       if (box.children.length > 0) box.removeChild(box.children[0]);
       box.appendChild(pastBox.removeChild(child));
       board[index] = board[pastIndex];
@@ -53,12 +58,7 @@ displayBoard.forEach((box, index) => {
     // if selected piece is selected again
     if (pastBox !== null) {
       box.classList.toggle("selected");
-      highLightedPlaces.moves.forEach((place) => {
-        displayBoard[place].classList.toggle("possible");
-      });
-      highLightedPlaces.kills.forEach((place) => {
-        displayBoard[place].classList.toggle("kill");
-      });
+      updateHighlights();
       pastBox = null;
       child = null;
       pastIndex = null;
@@ -68,12 +68,7 @@ displayBoard.forEach((box, index) => {
     if (box.children.length > 0) {
       box.classList.toggle("selected");
       highLightedPlaces = getMoves(index);
-      highLightedPlaces.moves.forEach((place) => {
-        displayBoard[place].classList.toggle("possible");
-      });
-      highLightedPlaces.kills.forEach((place) => {
-        displayBoard[place].classList.toggle("kill");
-      });
+      updateHighlights();
       child = box.children[0];
       pastBox = box;
       pastIndex = index;
