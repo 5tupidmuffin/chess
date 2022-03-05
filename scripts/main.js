@@ -48,8 +48,8 @@ let highLightedPlaces = {
   moves: [],
   kills: [],
 };
-displayBoard.forEach((box, index) => {
-  box.onclick = () => {
+
+const clickMove = (box, index) => {
   // if a piece was selected previously
   if (pastBox !== null && pastBox !== box) {
     if (
@@ -125,4 +125,7 @@ displayBoard.forEach((box, index) => {
     pastIndex = index;
   }
 };
+
+displayBoard.forEach((box, index) => {
+  box.onclick = () => clickMove(box, index);
 });
