@@ -91,3 +91,17 @@ body {
 .kill {
   background-image: radial-gradient(rgba(0, 0, 0, 0) 60%, var(--kill) 90%);
 }
+
+/* github corner */
+.github-corner {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 14%;
+}
+
+@media screen and (max-width: 1000px) {
+  .github-corner {
+    height: 10%;
+  }
+}
