@@ -1,4 +1,5 @@
 import { getMoves, getPieceType } from "./moves.js";
+import { printBoard } from "./debugTools/utils.js";
 
 const displayBoard = document.querySelectorAll(".box");
 
@@ -14,6 +15,18 @@ export const board = [
   21, 21, 21, 21, 21, 21, 21, 21, // +20 to represent white pieces
   25, 23, 24, 29, 20, 24, 23, 25,
 ];
+
+window.enableDebugTools = () => {
+  // enable debug tools
+  window.printBoard = printBoard;
+  return true;
+};
+
+window.disableDebugTools = () => {
+  // disble debug tools
+  delete window?.printBoard;
+  return true;
+};
 
 const piece_placed_sound = new Audio("./assets/sounds/piece_placed.mp3");
 
@@ -37,79 +50,79 @@ let highLightedPlaces = {
 };
 displayBoard.forEach((box, index) => {
   box.onclick = () => {
-    // if a piece was selected previously
-    if (pastBox !== null && pastBox !== box) {
-      if (
-        !highLightedPlaces.moves.includes(index) &&
-        !highLightedPlaces.kills.includes(index)
-      )
-        return; // highlightedPlaces === LegalMoves
-      if (
-        getPieceType(pastIndex).type === "king" &&
-        Math.abs(index - pastIndex) === 2
-      ) {
-        // its a castling move
-        let castlingData = highLightedPlaces.castling;
-        box.appendChild(pastBox.removeChild(child)); // move the king
-        board[index] = board[pastIndex];
-        board[pastIndex] = 0;
-
-        if (castlingData?.[index]?.side === "left") {
-          // castling on the left side
-          displayBoard[index + 1].appendChild(
-            displayBoard[castlingData?.[index]?.rook].removeChild(
-              displayBoard[castlingData?.[index]?.rook].children[0]
-            )
-          );
-          // update board representation
-          board[index + 1] = board[castlingData?.[index]?.rook];
-          board[castlingData?.[index]?.rook] = 0;
-        } else {
-          // castling on the right side
-          displayBoard[index - 1].appendChild(
-            displayBoard[castlingData?.[index]?.rook].removeChild(
-              displayBoard[castlingData?.[index]?.rook].children[0]
-            )
-          );
-          // update board representation
-          board[index - 1] = board[castlingData?.[index]?.rook];
-          board[castlingData?.[index]?.rook] = 0;
-        }
-        updateHighlights();
-        pastBox.classList.toggle("selected");
-        piece_placed_sound.play();
-        pastBox = null;
-        child = null;
-        return;
-      }
-      pastBox.classList.toggle("selected");
-      updateHighlights();
-      if (box.children.length > 0) box.removeChild(box.children[0]);
-      box.appendChild(pastBox.removeChild(child));
+  // if a piece was selected previously
+  if (pastBox !== null && pastBox !== box) {
+    if (
+      !highLightedPlaces.moves.includes(index) &&
+      !highLightedPlaces.kills.includes(index)
+    )
+      return; // highlightedPlaces === LegalMoves
+    if (
+      getPieceType(pastIndex).type === "king" &&
+      Math.abs(index - pastIndex) === 2
+    ) {
+      // its a castling move
+      let castlingData = highLightedPlaces.castling;
+      box.appendChild(pastBox.removeChild(child)); // move the king
       board[index] = board[pastIndex];
-      piece_placed_sound.play();
       board[pastIndex] = 0;
+
+      if (castlingData?.[index]?.side === "left") {
+        // castling on the left side
+        displayBoard[index + 1].appendChild(
+          displayBoard[castlingData?.[index]?.rook].removeChild(
+            displayBoard[castlingData?.[index]?.rook].children[0]
+          )
+        );
+        // update board representation
+        board[index + 1] = board[castlingData?.[index]?.rook];
+        board[castlingData?.[index]?.rook] = 0;
+      } else {
+        // castling on the right side
+        displayBoard[index - 1].appendChild(
+          displayBoard[castlingData?.[index]?.rook].removeChild(
+            displayBoard[castlingData?.[index]?.rook].children[0]
+          )
+        );
+        // update board representation
+        board[index - 1] = board[castlingData?.[index]?.rook];
+        board[castlingData?.[index]?.rook] = 0;
+      }
+      updateHighlights();
+      pastBox.classList.toggle("selected");
+      piece_placed_sound.play();
       pastBox = null;
       child = null;
       return;
     }
-    // if selected piece is selected again
-    if (pastBox !== null) {
-      box.classList.toggle("selected");
-      updateHighlights();
-      pastBox = null;
-      child = null;
-      pastIndex = null;
-      return;
-    }
-    // if no piece was selected previously
-    if (box.children.length > 0) {
-      box.classList.toggle("selected");
-      highLightedPlaces = getMoves(index);
-      updateHighlights();
-      child = box.children[0];
-      pastBox = box;
-      pastIndex = index;
-    }
-  };
+    pastBox.classList.toggle("selected");
+    updateHighlights();
+    if (box.children.length > 0) box.removeChild(box.children[0]);
+    box.appendChild(pastBox.removeChild(child));
+    board[index] = board[pastIndex];
+    piece_placed_sound.play();
+    board[pastIndex] = 0;
+    pastBox = null;
+    child = null;
+    return;
+  }
+  // if selected piece is selected again
+  if (pastBox !== null) {
+    box.classList.toggle("selected");
+    updateHighlights();
+    pastBox = null;
+    child = null;
+    pastIndex = null;
+    return;
+  }
+  // if no piece was selected previously
+  if (box.children.length > 0) {
+    box.classList.toggle("selected");
+    highLightedPlaces = getMoves(index);
+    updateHighlights();
+    child = box.children[0];
+    pastBox = box;
+    pastIndex = index;
+  }
+};
 });
