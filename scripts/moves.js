@@ -258,7 +258,6 @@ const knightMoves = (startPosition) => {
 };
 
 const kingMoves = (startPosition) => {
-  console.log("here");
   let validMoves = {
     moves: [],
     kills: [],
@@ -279,5 +278,37 @@ const kingMoves = (startPosition) => {
       }
     }
   }
+
+  // castling
+  let rooks = self.color === "white" ? [63, 56] : [0, 7];
+  let kingAtStart =
+    self.color === "white" ? startPosition === 60 : startPosition === 4;
+  out: for (let position of rooks) {
+    if (!kingAtStart) break; // if king isnt on the start position no castling
+    if (
+      board[position] === 0 ||
+      (getPieceType(position).type !== "rook" &&
+        getPieceType(position).color !== self.color)
+    )
+      continue;
+
+    // can the rooks reach king
+    if (position === 63 || position === 7) {
+      // rooks on the right side of board
+      for (let i = position - 1; i > startPosition; i--) {
+        if (board[i] !== 0) continue out; // continue outer loop
+      }
+      validMoves.moves.push(startPosition + 2);
+    }
+
+    if (position === 0 || position === 56) {
+      // rooks on the left side of board
+      for (let i = position + 1; i < startPosition; i++) {
+        if (board[i] !== 0) continue out; // continue outer loop
+      }
+      validMoves.moves.push(startPosition - 2);
+    }
+  }
+
   return validMoves;
 };
