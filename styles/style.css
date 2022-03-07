@@ -2,6 +2,7 @@
   --darkplace: #d28c45;
   --lightplace: #ffcf9f;
   --selected: #ebc934;
+  --pastMove: #cfaf21;
   --kill: #eb4634;
 }
 
@@ -86,6 +87,10 @@ body {
     rgba(0, 0, 0, 0.2) 30%,
     rgba(0, 0, 0, 0) 20%
   );
+}
+
+.pastMove {
+  background-color: var(--pastMove) !important;
 }
 
 .kill {
