@@ -21,6 +21,7 @@ export const board = [
 window.enableDebugTools = () => {
   // enable debug tools
   window.printBoard = printBoard;
+  window.boardFromFen = ChessBoard.fenToBoad();
   return true;
 };
 
