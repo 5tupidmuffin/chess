@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins&display=swap");
+
 :root {
   --darkplace: #d28c45;
   --lightplace: #ffcf9f;
@@ -78,6 +80,41 @@ body {
   background-color: var(--darkplace);
 }
 
+/* notations */
+.notation {
+  position: absolute;
+  margin: 0;
+  z-index: 2;
+  font-size: 1rem;
+  font-family: "Poppins", sans-serif;
+}
+
+.numberNotation {
+  top: 0.1rem;
+  left: 0.3rem;
+}
+
+.row:nth-child(odd) .numberNotation {
+  color: var(--darkplace);
+}
+
+.row:nth-child(even) .numberNotation {
+  color: var(--lightplace);
+}
+
+.letterNotation {
+  right: 0.3rem;
+  bottom: 0.1rem;
+}
+
+.box:nth-child(odd) .letterNotation {
+  color: var(--lightplace);
+}
+
+.box:nth-child(even) .letterNotation {
+  color: var(--darkplace);
+}
+
 .selected {
   background-color: var(--selected) !important;
 }
@@ -108,5 +145,9 @@ body {
 @media screen and (max-width: 1000px) {
   .github-corner {
     height: 10%;
+  }
+
+  .notation {
+    font-size: 0.7rem;
   }
 }
