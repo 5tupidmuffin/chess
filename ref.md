@@ -1,6 +1,7 @@
 ### References -
 
 - [ChessProgramming.org](https://www.chessprogramming.org/Board_Representation)
+- FEN Strings tested using puzzles from [here](https://www.wtharvey.com/).
 
 #### Media -
 
