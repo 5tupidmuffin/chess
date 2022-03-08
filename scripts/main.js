@@ -1,7 +1,9 @@
 import { getMoves, getPieceType } from "./moves.js";
 import { printBoard } from "./debugTools/utils.js";
+import Board from "./board.js";
 
 const displayBoard = document.querySelectorAll(".box");
+const ChessBoard = new Board(displayBoard);
 
 // https://www.chess.com/terms/chess-piece-value
 // prettier-ignore
@@ -30,14 +32,13 @@ window.disableDebugTools = () => {
 
 const piece_placed_sound = new Audio("./assets/sounds/piece_placed.mp3");
 
-const updateHighlights = () => {
-  // update highlighted moves and kills
-  highLightedPlaces.moves.forEach((place) => {
-    displayBoard[place].classList.toggle("possible");
-  });
-  highLightedPlaces.kills.forEach((place) => {
-    displayBoard[place].classList.toggle("kill");
-  });
+const pieceExistOnIndex = (index) => {
+  for (let child of displayBoard[index].children) {
+    if (child.nodeName === "IMG") {
+      return child;
+    }
+  }
+  return false;
 };
 
 // perform a move on click
@@ -63,42 +64,31 @@ const clickMove = (box, index) => {
     ) {
       // its a castling move
       let castlingData = highLightedPlaces.castling;
-      box.appendChild(pastBox.removeChild(child)); // move the king
       board[index] = board[pastIndex];
       board[pastIndex] = 0;
 
       if (castlingData?.[index]?.side === "left") {
         // castling on the left side
-        displayBoard[index + 1].appendChild(
-          displayBoard[castlingData?.[index]?.rook].removeChild(
-            displayBoard[castlingData?.[index]?.rook].children[0]
-          )
-        );
+        ChessBoard.movePiece(castlingData?.[index]?.rook, index + 1);
         // update board representation
         board[index + 1] = board[castlingData?.[index]?.rook];
         board[castlingData?.[index]?.rook] = 0;
       } else {
         // castling on the right side
-        displayBoard[index - 1].appendChild(
-          displayBoard[castlingData?.[index]?.rook].removeChild(
-            displayBoard[castlingData?.[index]?.rook].children[0]
-          )
-        );
+        ChessBoard.movePiece(castlingData?.[index]?.rook, index - 1);
         // update board representation
         board[index - 1] = board[castlingData?.[index]?.rook];
         board[castlingData?.[index]?.rook] = 0;
       }
-      updateHighlights();
-      pastBox.classList.toggle("selected");
+      ChessBoard.movePiece(pastIndex, index); // move the king
+      ChessBoard.removeAllHighlights();
       piece_placed_sound.play();
       pastBox = null;
       child = null;
       return;
     }
-    pastBox.classList.toggle("selected");
-    updateHighlights();
-    if (box.children.length > 0) box.removeChild(box.children[0]);
-    box.appendChild(pastBox.removeChild(child));
+    ChessBoard.removeAllHighlights();
+    ChessBoard.movePiece(pastIndex, index);
     board[index] = board[pastIndex];
     piece_placed_sound.play();
     board[pastIndex] = 0;
@@ -108,19 +98,19 @@ const clickMove = (box, index) => {
   }
   // if selected piece is selected again
   if (pastBox !== null) {
-    box.classList.toggle("selected");
-    updateHighlights();
+    ChessBoard.removeAllHighlights();
     pastBox = null;
     child = null;
     pastIndex = null;
     return;
   }
   // if no piece was selected previously
-  if (box.children.length > 0) {
-    box.classList.toggle("selected");
+  if (!pastBox && pieceExistOnIndex(index)) {
+    ChessBoard.highLightPiece(index);
     highLightedPlaces = getMoves(index);
-    updateHighlights();
-    child = box.children[0];
+    ChessBoard.highlightPlaces(highLightedPlaces.moves);
+    ChessBoard.highlightKills(highLightedPlaces.kills);
+    child = pieceExistOnIndex(index);
     pastBox = box;
     pastIndex = index;
   }
