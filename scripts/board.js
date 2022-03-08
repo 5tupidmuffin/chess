@@ -1,4 +1,21 @@
 // API to manipulate html board element
+import { fenToBoard } from "./debugTools/fenString.js";
+
+const PieceImages = {
+  20: "./assets/images/king_white.png",
+  29: "./assets/images/queen_white.png",
+  24: "./assets/images/bishop_white.png",
+  23: "./assets/images/knight_white.png",
+  25: "./assets/images/rook_white.png",
+  21: "./assets/images/pawn_white.png",
+  // black pieces
+  10: "./assets/images/king_black.png",
+  19: "./assets/images/queen_black.png",
+  14: "./assets/images/bishop_black.png",
+  13: "./assets/images/knight_black.png",
+  15: "./assets/images/rook_black.png",
+  11: "./assets/images/pawn_black.png",
+};
 export default class Board {
   constructor(htmlBoardElement = document.querySelector(".board")) {
     this.board = htmlBoardElement;
@@ -71,5 +88,30 @@ export default class Board {
     this.board[toHere].appendChild(pieceToBeMoved);
     this.pastMove = [fromHere, toHere];
     this.#toggleCssClass(this.pastMove, "pastMove");
+  }
+
+  boardFromFen(fenString) {
+    let compBoard = fenToBoard(fenString);
+    let boardCursor = 0,
+      compCursor = 0;
+
+    while (boardCursor < 64 && compCursor < 64) {
+      for (let child of this.board[boardCursor].children) {
+        if (child.nodeName === "IMG") {
+          this.board[boardCursor].removeChild(child);
+        }
+      }
+      if (compBoard[compCursor]) {
+        let el = document.createElement("img");
+        el.src = PieceImages[compBoard[compCursor]];
+        this.board[boardCursor].appendChild(el);
+      }
+      boardCursor++;
+      compCursor++;
+    }
+  }
+
+  fenToBoad() {
+    return this.boardFromFen.bind(this);
   }
 }
