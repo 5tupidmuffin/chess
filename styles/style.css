@@ -54,6 +54,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  position: relative;
 }
 
 .row:first-child {
@@ -123,15 +124,18 @@ body {
   background-image: radial-gradient(
     rgba(0, 0, 0, 0.2) 30%,
     rgba(0, 0, 0, 0) 20%
-  );
+  ) !important;
 }
 
 .pastMove {
-  background-color: var(--pastMove) !important;
+  background-image: radial-gradient(rgba(0, 0, 0, 0) 60%, var(--pastMove) 90%);
 }
 
 .kill {
-  background-image: radial-gradient(rgba(0, 0, 0, 0) 60%, var(--kill) 90%);
+  background-image: radial-gradient(
+    rgba(0, 0, 0, 0) 60%,
+    var(--kill) 90%
+  ) !important;
 }
 
 /* github corner */
