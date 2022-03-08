@@ -47,6 +47,12 @@ export default class Board {
     this.kills = [];
   }
 
+  removeAllHighlights() {
+    this.removeHighlightPiece();
+    this.removeHighlightedPlaces();
+    this.removeHighlightedKills();
+  }
+
   movePiece(fromHere, toHere) {
     if (this.pastMove.length) this.#toggleCssClass(this.pastMove, "pastMove");
     let pieceToBeMoved = null;
