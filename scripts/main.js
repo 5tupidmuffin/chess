@@ -1,5 +1,5 @@
 import { getMoves, getPieceType } from "./moves.js";
-import { printBoard } from "./debugTools/utils.js";
+import { printBoard, showIndexOfPlace } from "./debugTools/utils.js";
 import Board from "./board.js";
 
 const displayBoard = document.querySelectorAll(".box");
@@ -22,6 +22,7 @@ window.enableDebugTools = () => {
   // enable debug tools
   window.printBoard = printBoard;
   window.boardFromFen = ChessBoard.fenToBoad();
+  showIndexOfPlace(displayBoard);
   return true;
 };
 
