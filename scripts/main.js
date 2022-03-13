@@ -45,7 +45,6 @@ const pieceExistOnIndex = (index) => {
 
 // perform a move on click
 let pastBox = null;
-let child = null;
 let pastIndex = null;
 let highLightedPlaces = {
   moves: [],
@@ -86,7 +85,6 @@ const clickMove = (box, index) => {
       ChessBoard.removeAllHighlights();
       piece_placed_sound.play();
       pastBox = null;
-      child = null;
       return;
     }
     if (
@@ -102,7 +100,6 @@ const clickMove = (box, index) => {
       piece_placed_sound.play();
       board[pastIndex] = 0;
       pastBox = null;
-      child = null;
       return;
     }
 
@@ -112,14 +109,12 @@ const clickMove = (box, index) => {
     piece_placed_sound.play();
     board[pastIndex] = 0;
     pastBox = null;
-    child = null;
     return;
   }
   // if selected piece is selected again
   if (pastBox !== null) {
     ChessBoard.removeAllHighlights();
     pastBox = null;
-    child = null;
     pastIndex = null;
     return;
   }
@@ -134,7 +129,6 @@ const clickMove = (box, index) => {
     }
     ChessBoard.highlightPlaces(highLightedPlaces.moves);
     ChessBoard.highlightKills(highLightedPlaces.kills);
-    child = pieceExistOnIndex(index);
     pastBox = box;
     pastIndex = index;
   }
