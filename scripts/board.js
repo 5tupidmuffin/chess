@@ -90,6 +90,17 @@ export default class Board {
     this.#toggleCssClass(this.pastMove, "pastMove");
   }
 
+  removePiece(fromHere) {
+    let pieceToBeRemoved = null;
+    for (let child of this.board[fromHere].children) {
+      if (child.nodeName === "IMG") {
+        pieceToBeRemoved = this.board[fromHere].removeChild(child);
+        break;
+      }
+    }
+    return pieceToBeRemoved;
+  }
+
   boardFromFen(fenString) {
     let compBoard = fenToBoard(fenString);
     let boardCursor = 0,
