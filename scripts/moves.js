@@ -211,12 +211,14 @@ const pawnMoves = (startPosition) => {
     // kills
     if (
       board[startPosition + 9] !== 0 &&
-      getPieceType(startPosition + 9).color !== piece.color
+      getPieceType(startPosition + 9).color !== piece.color &&
+      Math.floor(startPosition / 8) + 1 === Math.floor((startPosition + 9) / 8)
     )
       validMoves.kills.push(startPosition + 9);
     if (
       board[startPosition + 7] !== 0 &&
-      getPieceType(startPosition + 7).color !== piece.color
+      getPieceType(startPosition + 7).color !== piece.color &&
+      Math.floor(startPosition / 8) + 1 === Math.floor((startPosition + 7) / 8)
     )
       validMoves.kills.push(startPosition + 7);
   }
