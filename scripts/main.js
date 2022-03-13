@@ -89,6 +89,21 @@ const clickMove = (box, index) => {
       child = null;
       return;
     }
+    if (
+      getPieceType(pastIndex).type === "pawn" &&
+      highLightedPlaces?.enPassant?.[`${index}`]
+    ) {
+      // its en passant
+      ChessBoard.movePiece(pastIndex, index);
+      ChessBoard.removePiece(highLightedPlaces?.enPassant?.[`${index}`]?.kill);
+      ChessBoard.removeAllHighlights();
+      piece_placed_sound.play();
+      board[pastIndex] = 0;
+      pastBox = null;
+      child = null;
+      return;
+    }
+
     ChessBoard.removeAllHighlights();
     ChessBoard.movePiece(pastIndex, index);
     board[index] = board[pastIndex];
@@ -110,6 +125,11 @@ const clickMove = (box, index) => {
   if (!pastBox && pieceExistOnIndex(index)) {
     ChessBoard.highLightPiece(index);
     highLightedPlaces = getMoves(index);
+    if (highLightedPlaces?.enPassant) {
+      Object.keys(highLightedPlaces.enPassant).forEach((place) => {
+        highLightedPlaces.moves.push(Number(place));
+      });
+    }
     ChessBoard.highlightPlaces(highLightedPlaces.moves);
     ChessBoard.highlightKills(highLightedPlaces.kills);
     child = pieceExistOnIndex(index);
