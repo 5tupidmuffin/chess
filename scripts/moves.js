@@ -33,7 +33,7 @@ export const getPieceType = (startPosition) => {
   return { color, type };
 };
 
-export const getMoves = (startPosition) => {
+export const getMoves = (startPosition, restrictions) => {
   let piece = getPieceType(startPosition);
   switch (piece.type) {
     case "queen":
@@ -50,7 +50,7 @@ export const getMoves = (startPosition) => {
     case "bishop":
       return diagonalMoves(startPosition);
     case "king":
-      return kingMoves(startPosition);
+      return kingMoves(startPosition, restrictions);
     default:
       // pawn
       return pawnMoves(startPosition);
@@ -327,7 +327,7 @@ const knightMoves = (startPosition) => {
   return validMoves;
 };
 
-const kingMoves = (startPosition) => {
+const kingMoves = (startPosition, restrictions) => {
   let validMoves = {
     moves: [],
     kills: [],
@@ -350,6 +350,8 @@ const kingMoves = (startPosition) => {
     }
   }
 
+  if (!restrictions?.castling?.[self.color].canCastle) return validMoves;
+
   // castling
   let rooks = self.color === "white" ? [63, 56] : [0, 7];
   let kingAtStart =
@@ -366,6 +368,7 @@ const kingMoves = (startPosition) => {
     // can the rooks reach king
     if (position === 63 || position === 7) {
       // rooks on the right side of board
+      if (!restrictions?.castling?.[self.color]?.right) continue out;
       for (let i = position - 1; i > startPosition; i--) {
         if (board[i] !== 0) continue out; // continue outer loop
       }
@@ -378,6 +381,7 @@ const kingMoves = (startPosition) => {
 
     if (position === 0 || position === 56) {
       // rooks on the left side of board
+      if (!restrictions?.castling?.[self.color]?.left) continue out;
       for (let i = position + 1; i < startPosition; i++) {
         if (board[i] !== 0) continue out; // continue outer loop
       }

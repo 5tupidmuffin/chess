@@ -18,6 +18,21 @@ export const board = [
   25, 23, 24, 29, 20, 24, 23, 25,
 ];
 
+const restrictions = {
+  castling: {
+    white: {
+      canCastle: true,
+      left: true,
+      right: true,
+    },
+    black: {
+      canCastle: true,
+      left: true,
+      right: true,
+    },
+  },
+};
+
 window.enableDebugTools = () => {
   // enable debug tools
   window.printBoard = printBoard;
@@ -49,6 +64,23 @@ let pastIndex = null;
 let highLightedPlaces = {
   moves: [],
   kills: [],
+};
+
+const updateRestrictions = (currentPos, lastPos) => {
+  // updating restrictions
+  const movedPiece = getPieceType(currentPos);
+  if (movedPiece.type === "king") {
+    restrictions.castling[movedPiece.color].canCastle = false;
+  }
+
+  if (movedPiece.type === "rook") {
+    if (lastPos === 0 || lastPos === 56) {
+      restrictions.castling[movedPiece.color].left = false;
+    }
+    if (lastPos === 7 || lastPos === 63) {
+      restrictions.castling[movedPiece.color].right = false;
+    }
+  }
 };
 
 const clickMove = (box, index) => {
@@ -85,6 +117,7 @@ const clickMove = (box, index) => {
       ChessBoard.removeAllHighlights();
       piece_placed_sound.play();
       pastBox = null;
+      updateRestrictions(index, pastIndex);
       return;
     }
     if (
@@ -107,6 +140,7 @@ const clickMove = (box, index) => {
     ChessBoard.movePiece(pastIndex, index);
     board[index] = board[pastIndex];
     piece_placed_sound.play();
+    updateRestrictions(index, pastIndex);
     board[pastIndex] = 0;
     pastBox = null;
     return;
@@ -121,7 +155,7 @@ const clickMove = (box, index) => {
   // if no piece was selected previously
   if (!pastBox && pieceExistOnIndex(index)) {
     ChessBoard.highLightPiece(index);
-    highLightedPlaces = getMoves(index);
+    highLightedPlaces = getMoves(index, restrictions);
     if (highLightedPlaces?.enPassant) {
       Object.keys(highLightedPlaces.enPassant).forEach((place) => {
         highLightedPlaces.moves.push(Number(place));
