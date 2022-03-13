@@ -166,6 +166,7 @@ const pawnMoves = (startPosition) => {
   const validMoves = {
     moves: [],
     kills: [],
+    enPassant: {},
   };
   if (piece.color === "white") {
     if (startPosition - 8 < 0) {
@@ -194,6 +195,35 @@ const pawnMoves = (startPosition) => {
       Math.floor(startPosition / 8) - 1 === Math.floor((startPosition - 7) / 8)
     )
       validMoves.kills.push(startPosition - 7);
+
+    // en passant
+    if (Math.floor(startPosition / 8) === 3) {
+      // left
+      if (
+        board[startPosition - 1] !== 0 && // if a pawn exists on the side
+        getPieceType(startPosition - 1).type === "pawn" && // check if its opponents pawn
+        getPieceType(startPosition - 1).color !== piece.color &&
+        Math.floor(startPosition / 8) === 3 && // check if its in the corrent rank
+        Math.floor((startPosition - 1) / 8) === 3 // check if the opponent's pawn is in current rank
+      ) {
+        validMoves.enPassant[startPosition - 9] = {
+          kill: startPosition - 1,
+        };
+      }
+
+      // right
+      if (
+        board[startPosition + 1] !== 0 &&
+        getPieceType(startPosition + 1).type === "pawn" &&
+        getPieceType(startPosition + 1).color !== piece.color &&
+        Math.floor(startPosition / 8) === 3 &&
+        Math.floor((startPosition + 1) / 8) === 3
+      ) {
+        validMoves.enPassant[startPosition - 7] = {
+          kill: startPosition + 1,
+        };
+      }
+    }
   } else {
     if (startPosition + 8 >= 63) {
       //   promotion
@@ -221,6 +251,34 @@ const pawnMoves = (startPosition) => {
       Math.floor(startPosition / 8) + 1 === Math.floor((startPosition + 7) / 8)
     )
       validMoves.kills.push(startPosition + 7);
+
+    // en passant
+    if (Math.floor(startPosition / 8) === 4) {
+      // left
+      if (
+        board[startPosition - 1] !== 0 &&
+        getPieceType(startPosition - 1).type === "pawn" &&
+        getPieceType(startPosition - 1).color !== piece.color &&
+        Math.floor(startPosition / 8) === 4 &&
+        Math.floor((startPosition - 1) / 8) === 4
+      ) {
+        validMoves.enPassant[startPosition + 7] = {
+          kill: startPosition - 1,
+        };
+      }
+
+      if (
+        board[startPosition + 1] !== 0 &&
+        getPieceType(startPosition + 1).type === "pawn" &&
+        getPieceType(startPosition + 1).color !== piece.color &&
+        Math.floor(startPosition / 8) === 4 &&
+        Math.floor((startPosition + 1) / 8) === 4
+      ) {
+        validMoves.enPassant[startPosition + 9] = {
+          kill: startPosition + 1,
+        };
+      }
+    }
   }
   return validMoves;
 };
