@@ -96,6 +96,8 @@ const clickMove = (box, index) => {
       // its en passant
       ChessBoard.movePiece(pastIndex, index);
       ChessBoard.removePiece(highLightedPlaces?.enPassant?.[`${index}`]?.kill);
+      board[index] = board[pastIndex];
+      board[highLightedPlaces?.enPassant?.[`${index}`]?.kill] = 0;
       ChessBoard.removeAllHighlights();
       piece_placed_sound.play();
       board[pastIndex] = 0;
