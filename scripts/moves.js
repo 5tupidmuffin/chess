@@ -53,7 +53,7 @@ export const getMoves = (startPosition, restrictions) => {
       return kingMoves(startPosition, restrictions);
     default:
       // pawn
-      return pawnMoves(startPosition);
+      return pawnMoves(startPosition, restrictions);
   }
 };
 
@@ -155,7 +155,7 @@ const diagonalMoves = (startPosition) => {
   return validMoves;
 };
 
-const pawnMoves = (startPosition) => {
+const pawnMoves = (startPosition, restrictions) => {
   /*
         TODO:
         - implement promotion
@@ -201,6 +201,7 @@ const pawnMoves = (startPosition) => {
       // left
       if (
         board[startPosition - 1] !== 0 && // if a pawn exists on the side
+        restrictions.enPassantKillable === startPosition - 1 &&
         getPieceType(startPosition - 1).type === "pawn" && // check if its opponents pawn
         getPieceType(startPosition - 1).color !== piece.color &&
         Math.floor(startPosition / 8) === 3 && // check if its in the corrent rank
@@ -214,6 +215,7 @@ const pawnMoves = (startPosition) => {
       // right
       if (
         board[startPosition + 1] !== 0 &&
+        restrictions.enPassantKillable === startPosition + 1 &&
         getPieceType(startPosition + 1).type === "pawn" &&
         getPieceType(startPosition + 1).color !== piece.color &&
         Math.floor(startPosition / 8) === 3 &&
@@ -257,6 +259,7 @@ const pawnMoves = (startPosition) => {
       // left
       if (
         board[startPosition - 1] !== 0 &&
+        restrictions.enPassantKillable === startPosition - 1 &&
         getPieceType(startPosition - 1).type === "pawn" &&
         getPieceType(startPosition - 1).color !== piece.color &&
         Math.floor(startPosition / 8) === 4 &&
@@ -269,6 +272,7 @@ const pawnMoves = (startPosition) => {
 
       if (
         board[startPosition + 1] !== 0 &&
+        restrictions.enPassantKillable === startPosition + 1 &&
         getPieceType(startPosition + 1).type === "pawn" &&
         getPieceType(startPosition + 1).color !== piece.color &&
         Math.floor(startPosition / 8) === 4 &&

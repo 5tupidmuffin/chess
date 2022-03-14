@@ -31,6 +31,7 @@ const restrictions = {
       right: true,
     },
   },
+  enPassantKillable: null,
 };
 
 window.enableDebugTools = () => {
@@ -118,6 +119,7 @@ const clickMove = (box, index) => {
       piece_placed_sound.play();
       pastBox = null;
       updateRestrictions(index, pastIndex);
+      restrictions.enPassantKillable = null;
       return;
     }
     if (
@@ -133,7 +135,17 @@ const clickMove = (box, index) => {
       piece_placed_sound.play();
       board[pastIndex] = 0;
       pastBox = null;
+      restrictions.enPassantKillable = null;
       return;
+    }
+
+    restrictions.enPassantKillable = null;
+    // if its a pawn's 2 step move
+    if (
+      getPieceType(pastIndex).type === "pawn" &&
+      Math.abs(pastIndex - index) === 16
+    ) {
+      restrictions.enPassantKillable = index;
     }
 
     ChessBoard.removeAllHighlights();
