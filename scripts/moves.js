@@ -159,7 +159,6 @@ const pawnMoves = (startPosition, restrictions) => {
   /*
         TODO:
         - implement promotion
-        - implement en passant
     */
 
   const piece = getPieceType(startPosition);
