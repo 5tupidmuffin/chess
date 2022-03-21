@@ -2,6 +2,7 @@
 
 - [ChessProgramming.org](https://www.chessprogramming.org/Board_Representation)
 - FEN Strings tested using puzzles from [here](https://www.wtharvey.com/).
+- [jhlywa/chess.js](https://github.com/jhlywa/chess.js)
 
 #### Media -
 
