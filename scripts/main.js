@@ -43,8 +43,13 @@ const restrictions = {
 
 window.enableDebugTools = () => {
   // enable debug tools
-  window.printBoard = printBoard;
-  window.boardFromFen = ChessBoard.fenToBoad();
+  window.printBoard = () => console.log(chess.board);
+  window.fenToBoard = (fen) => {
+    ChessBoard.boardFromFen(fen);
+    chess = new Chess(fen);
+  };
+  window.displayRep = ChessBoard;
+  window.memoryRep = chess;
   showIndexOfPlace(displayBoard);
   return true;
 };
