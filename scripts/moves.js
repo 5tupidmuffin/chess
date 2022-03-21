@@ -33,265 +33,219 @@ export const getPieceType = (startPosition) => {
   return { color, type };
 };
 
-export const getMoves = (startPosition, restrictions) => {
-  let piece = getPieceType(startPosition);
-  switch (piece.type) {
-    case "queen":
-      const sliding = slidingMoves(startPosition),
-        diagonal = diagonalMoves(startPosition);
-      return {
-        moves: sliding.moves.concat(diagonal.moves),
-        kills: sliding.kills.concat(diagonal.kills),
-      };
-    case "knight":
-      return knightMoves(startPosition);
-    case "rook":
-      return slidingMoves(startPosition);
-    case "bishop":
-      return diagonalMoves(startPosition);
-    case "king":
-      return kingMoves(startPosition, restrictions);
-    default:
-      // pawn
-      return pawnMoves(startPosition, restrictions);
-  }
-};
-
 // for rook and queen
-const slidingMoves = (startPosition) => {
-  let validMoves = {
-    moves: [],
-    kills: [],
-  };
-  const self = getPieceType(startPosition);
+export const slidingMoves = (startPosition, board) => {
+  const moves = [];
+  const self = board[startPosition];
   //horizontal moves
   for (let i = startPosition + 1; i % 8 !== 0; i++) {
-    if (board[i] !== 0 || i > 63) {
-      if (getPieceType(i).color !== self.color) {
-        validMoves.kills.push(i);
+    if (board[i] !== null || i > 63) {
+      if (i > 63) break;
+      if (board[i].color !== self.color) {
+        moves.push(i);
       }
       break;
     }
-    validMoves.moves.push(i);
+    moves.push(i);
   }
   for (let i = startPosition - 1; i % 8 !== 7; i--) {
-    if (board[i] !== 0 || i < 0) {
-      if (getPieceType(i).color !== self.color) {
-        validMoves.kills.push(i);
+    if (board[i] !== null || i < 0) {
+      if (i < 0) break;
+      if (board[i].color !== self.color) {
+        moves.push(i);
       }
       break;
     }
-    validMoves.moves.push(i);
+    moves.push(i);
   }
 
   //vertical moves
   for (let i = startPosition + 8; i <= 63; i += 8) {
-    if (board[i] !== 0) {
-      if (getPieceType(i).color !== self.color) {
-        validMoves.kills.push(i);
+    if (board[i] !== null) {
+      if (board[i].color !== self.color) {
+        moves.push(i);
       }
       break;
     }
-    validMoves.moves.push(i);
+    moves.push(i);
   }
   for (let i = startPosition - 8; i >= 0; i -= 8) {
-    if (board[i] !== 0) {
-      if (getPieceType(i).color !== self.color) {
-        validMoves.kills.push(i);
+    if (board[i] !== null) {
+      if (board[i].color !== self.color) {
+        moves.push(i);
       }
       break;
     }
-    validMoves.moves.push(i);
+    moves.push(i);
   }
 
-  return validMoves;
+  return moves;
 };
 
 // bishop and queen
-const diagonalMoves = (startPosition) => {
-  let validMoves = {
-    moves: [],
-    kills: [],
-  };
-  const self = getPieceType(startPosition);
+export const diagonalMoves = (startPosition, board) => {
+  const moves = [];
+  const self = board[startPosition];
   //   upper moves
-  for (let i = startPosition - 9; i > 0; i -= 9) {
-    if (board[i] !== 0 || i % 8 === 7) {
-      if (getPieceType(i).color !== self.color && i % 8 !== 7) {
-        validMoves.kills.push(i);
+  for (let i = startPosition - 9; i >= 0; i -= 9) {
+    if (board[i] !== null || i % 8 === 7) {
+      if (board[i]?.color !== self.color && i % 8 !== 7) {
+        moves.push(i);
       }
       break;
     }
-    validMoves.moves.push(i);
+    moves.push(i);
   }
   for (let i = startPosition - 7; i > 0; i -= 7) {
-    if (board[i] !== 0 || i % 8 === 0) {
-      if (getPieceType(i).color !== self.color && i % 8 !== 0) {
-        validMoves.kills.push(i);
+    if (board[i] !== null || i % 8 === 0) {
+      if (board[i]?.color !== self.color && i % 8 !== 0) {
+        moves.push(i);
       }
       break;
     }
-    validMoves.moves.push(i);
+    moves.push(i);
   }
   //   lower moves
   for (let i = startPosition + 9; i < 64; i += 9) {
-    if (board[i] !== 0 || i % 8 === 0) {
-      if (getPieceType(i).color !== self.color && i % 8 !== 0) {
-        validMoves.kills.push(i);
+    if (board[i] !== null || i % 8 === 0) {
+      if (board[i]?.color !== self.color && i % 8 !== 0) {
+        moves.push(i);
       }
       break;
     }
-    validMoves.moves.push(i);
+    moves.push(i);
   }
   for (let i = startPosition + 7; i < 64; i += 7) {
-    if (board[i] !== 0 || i % 8 === 7) {
-      if (getPieceType(i).color !== self.color && i % 8 !== 7) {
-        validMoves.kills.push(i);
+    if (board[i] !== null || i % 8 === 7) {
+      if (board[i]?.color !== self.color && i % 8 !== 7) {
+        moves.push(i);
       }
       break;
     }
-    validMoves.moves.push(i);
+    moves.push(i);
   }
-  return validMoves;
+  return moves;
 };
 
-const pawnMoves = (startPosition, restrictions) => {
+export const pawnMoves = (startPosition, board, flags) => {
   /*
         TODO:
+        _ implement en passant
         - implement promotion
     */
 
-  const piece = getPieceType(startPosition);
-  const validMoves = {
-    moves: [],
-    kills: [],
-    enPassant: {},
-  };
-  if (piece.color === "white") {
+  const self = board[startPosition];
+  const moves = [];
+  if (self.color === "w") {
     if (startPosition - 8 < 0) {
       //   promotion
     }
-    if (board[startPosition - 8] === 0)
-      validMoves.moves.push(startPosition - 8);
+    if (board[startPosition - 8] === null) moves.push(startPosition - 8);
     // if first move
     if (
       Math.floor(startPosition / 8) === 6 &&
-      board[startPosition - 8] === 0 &&
-      board[startPosition - 16] === 0
+      board[startPosition - 8] === null &&
+      board[startPosition - 16] === null
     )
-      validMoves.moves.push(startPosition - 16);
+      moves.push({
+        to: startPosition - 16,
+        enPassantSquare: startPosition - 16,
+      });
 
     // kills
     if (
-      board[startPosition - 9] !== 0 &&
-      getPieceType(startPosition - 9).color !== piece.color &&
+      board[startPosition - 9] !== null &&
+      board[startPosition - 9].color !== self.color &&
       Math.floor(startPosition / 8) - 1 === Math.floor((startPosition - 9) / 8)
     )
-      validMoves.kills.push(startPosition - 9);
+      moves.push(startPosition - 9);
     if (
-      board[startPosition - 7] !== 0 &&
-      getPieceType(startPosition - 7).color !== piece.color &&
+      board[startPosition - 7] !== null &&
+      board[startPosition - 7].color !== self.color &&
       Math.floor(startPosition / 8) - 1 === Math.floor((startPosition - 7) / 8)
     )
-      validMoves.kills.push(startPosition - 7);
+      moves.push(startPosition - 7);
 
     // en passant
     if (Math.floor(startPosition / 8) === 3) {
       // left
       if (
-        board[startPosition - 1] !== 0 && // if a pawn exists on the side
-        restrictions.enPassantKillable === startPosition - 1 &&
-        getPieceType(startPosition - 1).type === "pawn" && // check if its opponents pawn
-        getPieceType(startPosition - 1).color !== piece.color &&
+        startPosition - 1 === flags.enPassantSquare && // if a pawn exists on the side
+        board[startPosition - 1].color !== self.color &&
         Math.floor(startPosition / 8) === 3 && // check if its in the corrent rank
         Math.floor((startPosition - 1) / 8) === 3 // check if the opponent's pawn is in current rank
       ) {
-        validMoves.enPassant[startPosition - 9] = {
-          kill: startPosition - 1,
-        };
+        moves.push({ to: startPosition - 9, enPassantKill: startPosition - 1 });
       }
 
       // right
       if (
-        board[startPosition + 1] !== 0 &&
-        restrictions.enPassantKillable === startPosition + 1 &&
-        getPieceType(startPosition + 1).type === "pawn" &&
-        getPieceType(startPosition + 1).color !== piece.color &&
+        startPosition + 1 === flags.enPassantSquare &&
+        board[startPosition + 1].color !== self.color &&
         Math.floor(startPosition / 8) === 3 &&
         Math.floor((startPosition + 1) / 8) === 3
       ) {
-        validMoves.enPassant[startPosition - 7] = {
-          kill: startPosition + 1,
-        };
+        moves.push({ to: startPosition - 7, enPassantKill: startPosition + 1 });
       }
     }
   } else {
     if (startPosition + 8 >= 63) {
       //   promotion
     }
-    if (board[startPosition + 8] === 0)
-      validMoves.moves.push(startPosition + 8);
+    if (board[startPosition + 8] === null) moves.push(startPosition + 8);
     // if first move
     if (
       Math.floor(startPosition / 8) === 1 &&
-      board[startPosition + 8] === 0 &&
-      board[startPosition + 16] === 0
+      board[startPosition + 8] === null &&
+      board[startPosition + 16] === null
     )
-      validMoves.moves.push(startPosition + 16);
+      moves.push({
+        to: startPosition + 16,
+        enPassantSquare: startPosition + 16,
+      });
 
     // kills
     if (
-      board[startPosition + 9] !== 0 &&
-      getPieceType(startPosition + 9).color !== piece.color &&
+      board[startPosition + 9] !== null &&
+      board[startPosition + 9].color !== self.color &&
       Math.floor(startPosition / 8) + 1 === Math.floor((startPosition + 9) / 8)
     )
-      validMoves.kills.push(startPosition + 9);
+      moves.push(startPosition + 9);
     if (
-      board[startPosition + 7] !== 0 &&
-      getPieceType(startPosition + 7).color !== piece.color &&
+      board[startPosition + 7] !== null &&
+      board[startPosition + 7].color !== self.color &&
       Math.floor(startPosition / 8) + 1 === Math.floor((startPosition + 7) / 8)
     )
-      validMoves.kills.push(startPosition + 7);
+      moves.push(startPosition + 7);
 
     // en passant
     if (Math.floor(startPosition / 8) === 4) {
       // left
       if (
-        board[startPosition - 1] !== 0 &&
-        restrictions.enPassantKillable === startPosition - 1 &&
-        getPieceType(startPosition - 1).type === "pawn" &&
-        getPieceType(startPosition - 1).color !== piece.color &&
+        startPosition - 1 === flags.enPassantSquare &&
+        board[startPosition - 1].color !== self.color &&
         Math.floor(startPosition / 8) === 4 &&
         Math.floor((startPosition - 1) / 8) === 4
       ) {
-        validMoves.enPassant[startPosition + 7] = {
-          kill: startPosition - 1,
-        };
+        moves.push({ to: startPosition + 7, enPassantKill: startPosition - 1 });
       }
 
       if (
-        board[startPosition + 1] !== 0 &&
-        restrictions.enPassantKillable === startPosition + 1 &&
-        getPieceType(startPosition + 1).type === "pawn" &&
-        getPieceType(startPosition + 1).color !== piece.color &&
+        startPosition + 1 === flags.enPassantSquare &&
+        board[startPosition + 1].color !== self.color &&
         Math.floor(startPosition / 8) === 4 &&
         Math.floor((startPosition + 1) / 8) === 4
       ) {
-        validMoves.enPassant[startPosition + 9] = {
-          kill: startPosition + 1,
-        };
+        moves.push({ to: startPosition + 9, enPassantKill: startPosition + 1 });
       }
     }
   }
-  return validMoves;
+  return moves;
 };
 
-const knightMoves = (startPosition) => {
-  let validMoves = {
-    moves: [],
-    kills: [],
-  };
-  const self = getPieceType(startPosition);
+export const knightMoves = (startPosition, board) => {
+  const moves = [];
+  const self = board[startPosition];
   let values = [6, 10, 15, 17];
   for (let value of values) {
     // countiue statements if piece is too near to side of board so as to prevent invalid moves
@@ -300,12 +254,12 @@ const knightMoves = (startPosition) => {
     if (startPosition % 8 === 6 && value === 10) continue;
     if (startPosition % 8 === 7 && (value === 10 || value === 17)) continue;
     if (startPosition + value <= 63) {
-      if (board[startPosition + value] === 0) {
-        validMoves.moves.push(startPosition + value);
+      if (board[startPosition + value] === null) {
+        moves.push(startPosition + value);
         continue;
       } else {
-        if (getPieceType(startPosition + value).color !== self.color)
-          validMoves.kills.push(startPosition + value);
+        if (board[startPosition + value].color !== self.color)
+          moves.push(startPosition + value);
         continue;
       }
     }
@@ -317,20 +271,20 @@ const knightMoves = (startPosition) => {
     if (startPosition % 8 === 1 && value === 10) continue;
     if (startPosition % 8 === 0 && (value === 10 || value === 17)) continue;
     if (startPosition - value >= 0) {
-      if (board[startPosition - value] === 0) {
-        validMoves.moves.push(startPosition - value);
+      if (board[startPosition - value] === null) {
+        moves.push(startPosition - value);
         continue;
       } else {
-        if (getPieceType(startPosition - value).color !== self.color)
-          validMoves.kills.push(startPosition - value);
+        if (board[startPosition - value].color !== self.color)
+          moves.push(startPosition - value);
         continue;
       }
     }
   }
-  return validMoves;
+  return moves;
 };
 
-const kingMoves = (startPosition, restrictions) => {
+export const kingMoves = (startPosition, restrictions) => {
   let validMoves = {
     moves: [],
     kills: [],
