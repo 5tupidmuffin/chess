@@ -96,19 +96,8 @@ export default class Board {
   movePiece(fromHere, toHere) {
     // perform a move
     if (this.pastMove.length) this.#toggleCssClass(this.pastMove, "pastMove");
-    let pieceToBeMoved = null;
-    for (let child of this.board[fromHere].children) {
-      if (child.nodeName === "IMG") {
-        pieceToBeMoved = this.board[fromHere].removeChild(child);
-        break;
-      }
-    }
-    for (let child of this.board[toHere].children) {
-      if (child.nodeName === "IMG") {
-        this.board[toHere].removeChild(child);
-        break;
-      }
-    }
+    let pieceToBeMoved = this.removePiece(fromHere);
+    this.removePiece(toHere);
     this.board[toHere].appendChild(pieceToBeMoved);
     this.pastMove = [fromHere, toHere];
     this.#toggleCssClass(this.pastMove, "pastMove");
@@ -141,16 +130,10 @@ export default class Board {
       compCursor = 0;
 
     while (boardCursor < 64 && compCursor < 64) {
-      for (let child of this.board[boardCursor].children) {
-        if (child.nodeName === "IMG") {
-          this.board[boardCursor].removeChild(child);
-        }
-      }
+      this.removePiece(boardCursor);
       if (compBoard[compCursor]) {
-        let el = document.createElement("img");
         let piece = compBoard[compCursor];
-        el.src = PieceImages[piece.color][piece.piece];
-        this.board[boardCursor].appendChild(el);
+        this.addPiece(boardCursor, piece.color, piece.piece);
       }
       boardCursor++;
       compCursor++;
