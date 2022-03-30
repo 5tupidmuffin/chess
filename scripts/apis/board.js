@@ -132,7 +132,8 @@ export default class Board {
 
   boardFromFen(fenString) {
     // construct a board from fen string
-    let compBoard = fenToBoard(fenString);
+    let compBoard = [];
+    ({ board: compBoard } = fenToBoard(fenString));
     let boardCursor = 0,
       compCursor = 0;
 

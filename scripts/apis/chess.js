@@ -19,12 +19,6 @@ export default class Chess {
   constructor(fen) {
     this.board = new Array(64);
 
-    if (fen) {
-      this.#loadFen(fen);
-    } else {
-      this.#loadFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR"); // default start position
-    }
-
     this.currentTurn = "w";
 
     this.kings = {
@@ -38,18 +32,33 @@ export default class Chess {
       enPassantSquare: null,
       restrictions: {
         castling: {
-          whiteKingSide: true,
-          whiteQueenSide: true,
-          blackKingSide: true,
-          blackQueenSide: true,
+          whiteKingSide: false,
+          whiteQueenSide: false,
+          blackKingSide: false,
+          blackQueenSide: false,
         },
       },
     };
+
+    this.halfMoves = 0;
+    this.fullMoves = 0;
+
+    if (fen) {
+      this.#loadFen(fen);
+    } else {
+      this.#loadFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"); // default start position
+    }
   }
 
   #loadFen(fen) {
     // load fen string
-    this.board = fenToBoard(fen);
+    ({
+      board: this.board,
+      whosMoveNext: this.currentTurn,
+      flags: this.flags,
+      halfMove: this.halfMoves,
+      fullMove: this.fullMoves,
+    } = fenToBoard(fen));
   }
 
   #addMove(from, to, movesList) {
