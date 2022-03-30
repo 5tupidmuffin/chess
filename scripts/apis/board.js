@@ -123,6 +123,13 @@ export default class Board {
     return pieceToBeRemoved;
   }
 
+  addPiece(here, color, type) {
+    this.removePiece(here);
+    const el = document.createElement("img");
+    el.src = PieceImages[color][type];
+    this.board[here].appendChild(el);
+  }
+
   boardFromFen(fenString) {
     // construct a board from fen string
     let compBoard = fenToBoard(fenString);
