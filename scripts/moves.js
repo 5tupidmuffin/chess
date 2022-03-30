@@ -1,38 +1,3 @@
-import { board } from "./main.js";
-
-export const getPieceType = (startPosition) => {
-  // return type and color of piece based on position
-  let piece = board[startPosition];
-  let color = piece >= 20 ? "white" : "black";
-  let type = "";
-  switch (color === "white" ? piece - 10 : piece) {
-    case 10:
-      type = "king";
-      break;
-
-    case 19:
-      type = "queen";
-      break;
-
-    case 15:
-      type = "rook";
-      break;
-
-    case 13:
-      type = "knight";
-      break;
-
-    case 14:
-      type = "bishop";
-      break;
-
-    default:
-      type = "pawn";
-      break;
-  }
-  return { color, type };
-};
-
 // for rook and queen
 export const slidingMoves = (startPosition, board) => {
   const moves = [];

@@ -17,7 +17,7 @@ const pieceMap = {
 export default class Chess {
   // used Chess.js as reference
   constructor(fen) {
-    this.board = new Array(63);
+    this.board = new Array(64);
 
     if (fen) {
       this.#loadFen(fen);
@@ -52,7 +52,7 @@ export default class Chess {
     this.board = fenToBoard(fen);
   }
 
-  #add_move(from, to, movesList) {
+  #addMove(from, to, movesList) {
     // add a move in possible moves
     /*
       move = {
@@ -64,7 +64,7 @@ export default class Chess {
       }
     */
     if (typeof to === "object") {
-      if (to["enPassantSquare"]) {
+      if (to?.enPassantSquare) {
         movesList.push({
           from,
           to: to.to,
@@ -72,7 +72,7 @@ export default class Chess {
         });
       }
 
-      if (to["enPassantKill"]) {
+      if (to?.enPassantKill) {
         movesList.push({
           from,
           to: to.to,
@@ -112,7 +112,7 @@ export default class Chess {
     return this.currentTurn === "w" ? "b" : "w";
   }
 
-  generate_moves(position = null) {
+  generateMoves(position = null) {
     // generate all possible moves for a side or for a single piece
     const possibleMoves = [];
     if (position) {
@@ -122,7 +122,7 @@ export default class Chess {
         this.board,
         this.flags
       )) {
-        this.#add_move(position, move, possibleMoves);
+        this.#addMove(position, move, possibleMoves);
       }
     }
     return possibleMoves;

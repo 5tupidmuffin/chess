@@ -1,4 +1,3 @@
-import { getPieceType } from "./moves.js";
 import { showIndexOfPlace } from "./debugTools/utils.js";
 import Board from "./apis/board.js";
 import Chess from "./apis/chess.js";
@@ -11,19 +10,6 @@ const ChessBoard = new Board(displayBoard);
 let chess = new Chess(fen);
 
 ChessBoard.boardFromFen(fen);
-
-// https://www.chess.com/terms/chess-piece-value
-// prettier-ignore
-export const board = [
-  15, 13, 14, 19, 10, 14, 13, 15, // +10 to represent black pieces
-  11, 11, 11, 11, 11, 11, 11, 11, 
-  0,  0,  0,  0,  0,  0,  0,  0,  
-  0,  0,  0,  0,  0,  0,  0,  0,  
-  0,  0,  0,  0,  0,  0,  0,  0,
-  0,  0,  0,  0,  0,  0,  0,  0,
-  21, 21, 21, 21, 21, 21, 21, 21, // +20 to represent white pieces
-  25, 23, 24, 29, 20, 24, 23, 25,
-];
 
 const restrictions = {
   castling: {
@@ -75,7 +61,7 @@ const clickMove = (_, index) => {
     )
       return; // highlightedPlaces === LegalMoves
     if (
-      getPieceType(pastIndex).type === "king" &&
+      // getPieceType(pastIndex).type === "king" &&
       Math.abs(index - pastIndex) === 2
     ) {
       // its a castling move
@@ -120,7 +106,7 @@ const clickMove = (_, index) => {
     restrictions.enPassantKillable = null;
     // if its a pawn's 2 step move
     if (
-      getPieceType(pastIndex).type === "pawn" &&
+      // getPieceType(pastIndex).type === "pawn" &&
       Math.abs(pastIndex - index) === 16
     ) {
       restrictions.enPassantKillable = index;
@@ -146,7 +132,7 @@ const clickMove = (_, index) => {
   // if no piece was selected previously
   if (pastIndex === null && ChessBoard.hasAPiece(index)) {
     ChessBoard.highLightPiece(index);
-    highLightedPlaces = chess.generate_moves(index);
+    highLightedPlaces = chess.generateMoves(index);
     ChessBoard.highlightPlaces(highLightedPlaces);
     pastIndex = index;
   }
