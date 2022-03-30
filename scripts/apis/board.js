@@ -38,7 +38,10 @@ export default class Board {
   }
 
   hasAPiece(position) {
-    return this.board[position] ? true : false;
+    for (let child of this.board[position].children) {
+      if (child.nodeName === "IMG") return true;
+    }
+    return false;
   }
 
   #filterMoves(MovesObjects) {
