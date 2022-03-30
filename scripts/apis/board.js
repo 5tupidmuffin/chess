@@ -77,10 +77,11 @@ export default class Board {
 
   removeHighlightedPlaces() {
     // remove highlight on possible moves and kills
-    if (!this.possibleMoves.length) return;
-    this.#toggleCssClass(this.possibleMoves, "possible");
-    this.#toggleCssClass(this.kills, "kill");
+    if (this.possibleMoves.length)
+      this.#toggleCssClass(this.possibleMoves, "possible");
+    if (this.kills.length) this.#toggleCssClass(this.kills, "kill");
     this.possibleMoves = [];
+    this.kills = [];
   }
 
   removeAllHighlights() {
