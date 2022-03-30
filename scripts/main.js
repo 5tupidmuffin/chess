@@ -3,7 +3,7 @@ import Board from "./apis/board.js";
 import Chess from "./apis/chess.js";
 
 // start position fen
-const fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
+const fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 
 const displayBoard = document.querySelectorAll(".box");
 const ChessBoard = new Board(displayBoard);
