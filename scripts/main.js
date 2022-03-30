@@ -11,22 +11,6 @@ let chess = new Chess(fen);
 
 ChessBoard.boardFromFen(fen);
 
-const restrictions = {
-  castling: {
-    white: {
-      canCastle: true,
-      left: true,
-      right: true,
-    },
-    black: {
-      canCastle: true,
-      left: true,
-      right: true,
-    },
-  },
-  enPassantKillable: null,
-};
-
 window.enableDebugTools = () => {
   // enable debug tools
   window.printBoard = () => console.log(chess.board);
@@ -103,23 +87,11 @@ const clickMove = (_, index) => {
       return;
     }
 
-    restrictions.enPassantKillable = null;
-    // if its a pawn's 2 step move
-    if (
-      // getPieceType(pastIndex).type === "pawn" &&
-      Math.abs(pastIndex - index) === 16
-    ) {
-      restrictions.enPassantKillable = index;
-    }
-
     ChessBoard.removeAllHighlights();
     ChessBoard.movePiece(pastIndex, index);
-    // board[index] = board[pastIndex];
     const move = highLightedPlaces.filter((move) => move.to === index)[0];
     chess.doThisMove(move);
     piece_placed_sound.play();
-    // updateRestrictions(index, pastIndex);
-    // board[pastIndex] = 0;
     pastIndex = null;
     return;
   }
