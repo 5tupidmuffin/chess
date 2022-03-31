@@ -13,7 +13,7 @@ ChessBoard.boardFromFen(fen);
 
 window.enableDebugTools = () => {
   // enable debug tools
-  window.printBoard = () => console.log(chess.board);
+  window.printBoard = () => chess.printBoard();
   window.fenToBoard = (fen) => {
     ChessBoard.boardFromFen(fen);
     chess = new Chess(fen);

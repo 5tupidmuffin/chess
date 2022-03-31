@@ -121,6 +121,36 @@ export default class Chess {
     return this.currentTurn === "w" ? "b" : "w";
   }
 
+  printBoard() {
+    const getPieceNotation = (pieceObj) => {
+      if (pieceObj === null) return "-";
+      if (pieceObj.color === "w") {
+        return pieceObj.piece.toUpperCase();
+      } else {
+        return pieceObj.piece;
+      }
+    };
+
+    const lastRow = `  | a b c d e f g h |`;
+    let row = 8;
+
+    for (let i = 0; i <= 56; i += 8) {
+      console.log(
+        `${row} | ${getPieceNotation(this.board[i])} ${getPieceNotation(
+          this.board[i + 1]
+        )} ${getPieceNotation(this.board[i + 2])} ${getPieceNotation(
+          this.board[i + 3]
+        )} ${getPieceNotation(this.board[i + 4])} ${getPieceNotation(
+          this.board[i + 5]
+        )} ${getPieceNotation(this.board[i + 6])} ${getPieceNotation(
+          this.board[i + 7]
+        )} |`
+      );
+      row--;
+    }
+    console.log(lastRow);
+  }
+
   generateMoves(position = null) {
     // generate all possible moves for a side or for a single piece
     const possibleMoves = [];
