@@ -103,6 +103,14 @@ export default class Board {
     this.#toggleCssClass(this.pastMove, "pastMove");
   }
 
+  doThisMove(move) {
+    if (move?.enPassantKill) this.removePiece(move.enPassantKill);
+    if (move?.castling) {
+      this.movePiece(move.castling.from, move.castling.to);
+    }
+    this.movePiece(move.from, move.to);
+  }
+
   removePiece(fromHere) {
     // remove a piece from board
     let pieceToBeRemoved = null;
