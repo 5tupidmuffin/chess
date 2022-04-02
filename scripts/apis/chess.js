@@ -65,47 +65,30 @@ export default class Chess {
     // add a move in possible moves
     /*
       move = {
-        color,
+        piece: {},
         from,
         to,
-        promotion (O),
         kill (O),
+        promotion,
+        flags: { at that move },
+        anySpecialMove
       }
     */
-    if (typeof to === "object") {
-      if (to?.enPassantSquare) {
-        movesList.push({
-          from,
-          to: to.to,
-          enPassantSquare: to.enPassantSquare,
-        });
-      }
+    const build = {
+      ...to,
+      piece: this.board[from],
+      from,
+    };
 
-      if (to?.enPassantKill) {
-        movesList.push({
-          from,
-          to: to.to,
-          enPassantKill: to.enPassantKill,
-        });
-      }
-      return;
+    if (this.board[build.to]) {
+      build.kill = this.board[build.to];
     }
 
-    if (this.board[to]) {
-      movesList.push({
-        color: this.currentTurn,
-        from,
-        to: to,
-        kill: this.board[to],
-      });
-    } else {
-      movesList.push({
-        color: this.currentTurn,
-        from,
-        to,
-      });
-    }
-    return;
+    movesList.push(build);
+  }
+
+  #deepCopy(anything) {
+    return JSON.parse(JSON.stringify(anything));
   }
 
   #changeTurn() {
@@ -172,10 +155,27 @@ export default class Chess {
     this.board[move.to] = this.board[move.from];
 
     // en passant conditions
+    this.flags = this.#deepCopy(move.flags);
     if (this.flags.enPassantSquare) this.flags.enPassantSquare = null;
     if (move?.enPassantSquare)
       this.flags.enPassantSquare = move.enPassantSquare;
     if (move?.enPassantKill) this.board[move.enPassantKill] = null;
+
+    // castling
+    if (move?.castling) {
+      this.board[move.castling.to] = this.board[move.castling.from];
+      this.board[move.castling.from] = null;
+    }
+
+    // if rooks move from initial position
+    if (move.whiteKingSide !== undefined)
+      this.flags.restrictions.castling.whiteKingSide = false;
+    if (move.whiteQueenSide !== undefined)
+      this.flags.restrictions.castling.whiteQueenSide = false;
+    if (move.blackKingSide !== undefined)
+      this.flags.restrictions.castling.whiteKingSide = false;
+    if (move.blackQueenSide !== undefined)
+      this.flags.restrictions.castling.whiteQueenSide = false;
 
     this.board[move.from] = null;
     this.history.push(move);
@@ -187,6 +187,7 @@ export default class Chess {
     if (!this.history.length) return;
     let lastMove = this.history.pop();
     this.board[lastMove.from] = this.board[lastMove.to];
+    this.flags = lastMove.flags;
     if (lastMove?.kill) {
       this.board[lastMove.to] = lastMove.kill;
     } else {
@@ -200,6 +201,12 @@ export default class Chess {
         piece: "p",
       };
       this.flags.enPassantSquare = lastMove.enPassantKill;
+    }
+
+    // castling
+    if (lastMove?.castling) {
+      this.board[lastMove.castling.from] = this.board[lastMove.castling.to];
+      this.board[lastMove.castling.to] = null;
     }
 
     this.#changeTurn();
