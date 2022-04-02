@@ -8,6 +8,8 @@ export const fenToBoard = (fenString) => {
     fullMove,
   ] = fenString.split(" ");
 
+  if (fenString.split(" ").length !== 6) throw new Error("invalid fen string");
+
   const flags = {
     enPassantSquare: null,
     restrictions: {
