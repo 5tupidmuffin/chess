@@ -144,6 +144,13 @@ body {
   ) !important;
 }
 
+/* debug */
+.debugLabel {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
 /* github corner */
 .github-corner {
   position: absolute;
