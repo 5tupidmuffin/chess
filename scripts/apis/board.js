@@ -30,10 +30,17 @@ export default class Board {
     this.pastMove = [];
   }
 
-  #toggleCssClass(places, cssSelector) {
+  #turnOn(places, cssSelector) {
     if (!places) return;
     for (let idx of places) {
-      this.board[idx].classList.toggle(cssSelector);
+      this.board[idx].classList.add(cssSelector);
+    }
+  }
+
+  #turnOff(places, cssSelector) {
+    if (!places) return;
+    for (let idx of places) {
+      this.board[idx].classList.remove(cssSelector);
     }
   }
 
@@ -59,13 +66,13 @@ export default class Board {
   highLightPiece(position) {
     // highlight clicked piece
     this.selectedPiece = position;
-    this.#toggleCssClass([this.selectedPiece], "selected");
+    this.#turnOn([this.selectedPiece], "selected");
   }
 
   removeHighlightPiece() {
     // remove highlight on clicked piece
     if (this.selectedPiece === null) return;
-    this.#toggleCssClass([this.selectedPiece], "selected");
+    this.#turnOff([this.selectedPiece], "selected");
     this.selectedPiece = null;
   }
 
@@ -74,15 +81,15 @@ export default class Board {
     const { moves, kills } = this.#filterMoves(arrayOfPositions);
     this.possibleMoves = moves;
     this.kills = kills;
-    this.#toggleCssClass(this.possibleMoves, "possible");
-    this.#toggleCssClass(this.kills, "kill");
+    this.#turnOn(this.possibleMoves, "possible");
+    this.#turnOn(this.kills, "kill");
   }
 
   removeHighlightedPlaces() {
     // remove highlight on possible moves and kills
     if (this.possibleMoves.length)
-      this.#toggleCssClass(this.possibleMoves, "possible");
-    if (this.kills.length) this.#toggleCssClass(this.kills, "kill");
+      this.#turnOff(this.possibleMoves, "possible");
+    if (this.kills.length) this.#turnOff(this.kills, "kill");
     this.possibleMoves = [];
     this.kills = [];
   }
@@ -95,12 +102,12 @@ export default class Board {
 
   movePiece(fromHere, toHere) {
     // perform a move
-    if (this.pastMove.length) this.#toggleCssClass(this.pastMove, "pastMove");
+    if (this.pastMove.length) this.#turnOff(this.pastMove, "pastMove");
     let pieceToBeMoved = this.removePiece(fromHere);
     this.removePiece(toHere);
     this.board[toHere].appendChild(pieceToBeMoved);
     this.pastMove = [fromHere, toHere];
-    this.#toggleCssClass(this.pastMove, "pastMove");
+    this.#turnOn(this.pastMove, "pastMove");
   }
 
   doThisMove(move) {
