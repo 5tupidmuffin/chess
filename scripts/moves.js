@@ -112,13 +112,27 @@ export const pawnMoves = (startPosition, board, flags) => {
         - implement promotion
     */
 
-  const self = board[startPosition];
-  const moves = [];
-  if (self.color === "w") {
-    if (startPosition - 8 < 0) {
-      //   promotion
+  const promotionPieces = ["q", "r", "b", "n"];
+  const promotionMoves = (to) => {
+    const promos = [];
+    for (let piece of promotionPieces) {
+      promos.push({
+        to,
+        flags,
+        promotion: { piece, color: self.color },
+      });
     }
-    if (board[startPosition - 8] === null)
+    return promos;
+  };
+
+  const self = board[startPosition];
+  let moves = [];
+  if (self.color === "w") {
+    if (startPosition - 8 < 8) {
+      //   promotion
+      moves = moves.concat(promotionMoves(startPosition - 8));
+    }
+    if (board[startPosition - 8] === null && !(startPosition - 8 < 8))
       moves.push({ to: startPosition - 8, flags });
     // if first move
     if (
@@ -135,16 +149,26 @@ export const pawnMoves = (startPosition, board, flags) => {
     // kills
     if (
       board[startPosition - 9] !== null &&
-      board[startPosition - 9].color !== self.color &&
+      board[startPosition - 9]?.color !== self.color &&
       Math.floor(startPosition / 8) - 1 === Math.floor((startPosition - 9) / 8)
-    )
-      moves.push({ to: startPosition - 9, flags });
+    ) {
+      if (startPosition - 9 < 8) {
+        moves.concat(promotionMoves(startPosition - 9));
+      } else {
+        moves.push({ to: startPosition - 9, flags });
+      }
+    }
     if (
       board[startPosition - 7] !== null &&
-      board[startPosition - 7].color !== self.color &&
+      board[startPosition - 7]?.color !== self.color &&
       Math.floor(startPosition / 8) - 1 === Math.floor((startPosition - 7) / 8)
-    )
-      moves.push({ to: startPosition - 7, flags });
+    ) {
+      if (startPosition - 7 < 8) {
+        moves.concat(promotionMoves(startPosition - 7));
+      } else {
+        moves.push({ to: startPosition - 7, flags });
+      }
+    }
 
     // en passant
     if (Math.floor(startPosition / 8) === 3) {
@@ -155,7 +179,6 @@ export const pawnMoves = (startPosition, board, flags) => {
         Math.floor(startPosition / 8) === 3 && // check if its in the corrent rank
         Math.floor((startPosition - 1) / 8) === 3 // check if the opponent's pawn is in current rank
       ) {
-        console.log("here");
         moves.push({
           to: startPosition - 9,
           flags,
@@ -178,10 +201,11 @@ export const pawnMoves = (startPosition, board, flags) => {
       }
     }
   } else {
-    if (startPosition + 8 >= 63) {
+    if (startPosition + 8 >= 56) {
       //   promotion
+      moves = moves.concat(promotionMoves(startPosition + 8));
     }
-    if (board[startPosition + 8] === null)
+    if (board[startPosition + 8] === null && startPosition + 8 >= 56)
       moves.push({ to: startPosition + 8, flags });
     // if first move
     if (
@@ -189,11 +213,6 @@ export const pawnMoves = (startPosition, board, flags) => {
       board[startPosition + 8] === null &&
       board[startPosition + 16] === null
     ) {
-      console.log({
-        to: startPosition + 16,
-        flags,
-        enPassantSquare: startPosition + 16,
-      });
       moves.push({
         to: startPosition + 16,
         flags,
@@ -204,23 +223,34 @@ export const pawnMoves = (startPosition, board, flags) => {
     // kills
     if (
       board[startPosition + 9] !== null &&
-      board[startPosition + 9].color !== self.color &&
+      board[startPosition + 9]?.color !== self.color &&
       Math.floor(startPosition / 8) + 1 === Math.floor((startPosition + 9) / 8)
-    )
-      moves.push({ to: startPosition + 9, flags });
+    ) {
+      if (startPosition + 9 >= 56) {
+        moves.concat(promotionMoves(startPosition + 9));
+      } else {
+        moves.push({ to: startPosition + 9, flags });
+      }
+    }
+
     if (
       board[startPosition + 7] !== null &&
-      board[startPosition + 7].color !== self.color &&
+      board[startPosition + 7]?.color !== self.color &&
       Math.floor(startPosition / 8) + 1 === Math.floor((startPosition + 7) / 8)
-    )
-      moves.push({ to: startPosition + 7, flags });
+    ) {
+      if (startPosition + 7 >= 56) {
+        moves.concat(promotionMoves(startPosition + 7));
+      } else {
+        moves.push({ to: startPosition + 7, flags });
+      }
+    }
 
     // en passant
     if (Math.floor(startPosition / 8) === 4) {
       // left
       if (
         startPosition - 1 === flags.enPassantSquare &&
-        board[startPosition - 1].color !== self.color &&
+        board[startPosition - 1]?.color !== self.color &&
         Math.floor(startPosition / 8) === 4 &&
         Math.floor((startPosition - 1) / 8) === 4
       ) {
@@ -233,7 +263,7 @@ export const pawnMoves = (startPosition, board, flags) => {
 
       if (
         startPosition + 1 === flags.enPassantSquare &&
-        board[startPosition + 1].color !== self.color &&
+        board[startPosition + 1]?.color !== self.color &&
         Math.floor(startPosition / 8) === 4 &&
         Math.floor((startPosition + 1) / 8) === 4
       ) {

@@ -7,10 +7,10 @@ const pieceMap = {
   b: moveGen.diagonalMoves,
   r: moveGen.slidingMoves,
   k: moveGen.kingMoves,
-  q: (position, board) => {
+  q: (position, board, flags) => {
     return moveGen
-      .slidingMoves(position, board)
-      .concat(moveGen.diagonalMoves(position, board));
+      .slidingMoves(position, board, flags)
+      .concat(moveGen.diagonalMoves(position, board, flags));
   },
 };
 
@@ -137,7 +137,7 @@ export default class Chess {
   generateMoves(position = null) {
     // generate all possible moves for a side or for a single piece
     const possibleMoves = [];
-    if (position) {
+    if (position !== null) {
       if (this.board[position].color !== this.currentTurn) return;
       for (let move of pieceMap[this.board[position].piece](
         position,
@@ -177,6 +177,8 @@ export default class Chess {
     if (move.blackQueenSide !== undefined)
       this.flags.restrictions.castling.whiteQueenSide = false;
 
+    if (move?.promotion) this.board[move.to] = move?.promotion;
+
     this.board[move.from] = null;
     this.history.push(move);
     this.#changeTurn();
@@ -208,6 +210,8 @@ export default class Chess {
       this.board[lastMove.castling.from] = this.board[lastMove.castling.to];
       this.board[lastMove.castling.to] = null;
     }
+
+    if (lastMove?.promotion) this.board[lastMove.from] = lastMove.piece;
 
     this.#changeTurn();
     return lastMove;

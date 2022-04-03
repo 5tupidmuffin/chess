@@ -116,6 +116,9 @@ export default class Board {
       this.movePiece(move.castling.from, move.castling.to);
     }
     this.movePiece(move.from, move.to);
+    if (move?.promotion) {
+      this.addPiece(move.to, move.promotion.color, move.promotion.piece);
+    }
   }
 
   removePiece(fromHere) {
