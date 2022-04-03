@@ -205,7 +205,7 @@ export const pawnMoves = (startPosition, board, flags) => {
       //   promotion
       moves = moves.concat(promotionMoves(startPosition + 8));
     }
-    if (board[startPosition + 8] === null && startPosition + 8 >= 56)
+    if (board[startPosition + 8] === null && !(startPosition + 8 >= 56))
       moves.push({ to: startPosition + 8, flags });
     // if first move
     if (
