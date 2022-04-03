@@ -1,29 +1,68 @@
 export const fenToBoard = (fenString) => {
-  const pieceTable = {
-    // white pieces
-    K: 20,
-    Q: 29,
-    B: 24,
-    N: 23,
-    R: 25,
-    P: 21,
-    // black pieces
-    k: 10,
-    q: 19,
-    b: 14,
-    n: 13,
-    r: 15,
-    p: 11,
+  const [
+    positions,
+    whosMoveNext,
+    castlingRights,
+    enPassant,
+    halfMove,
+    fullMove,
+  ] = fenString.split(" ");
+
+  if (fenString.split(" ").length !== 6) throw new Error("invalid fen string");
+
+  const flags = {
+    enPassantSquare: null,
+    restrictions: {
+      castling: {
+        whiteKingSide: false,
+        whiteQueenSide: false,
+        blackKingSide: false,
+        blackQueenSide: false,
+      },
+    },
   };
+
+  for (let char of castlingRights) {
+    inner: switch (char) {
+      case "-":
+        break;
+      case "K":
+        flags.restrictions.castling.whiteKingSide = true;
+        break inner;
+      case "k":
+        flags.restrictions.castling.blackKingSide = true;
+        break inner;
+      case "Q":
+        flags.restrictions.castling.whiteQueenSide = true;
+        break inner;
+      case "q":
+        flags.restrictions.castling.blackQueenSide = true;
+        break inner;
+      default:
+        throw new Error("invalid character in castling rights");
+    }
+  }
+
+  const chars = "abcdefgh";
+  if (enPassant !== "-")
+    flags.enPassantSquare =
+      chars.indexOf(enPassant[0]) + 8 * (8 - Number(enPassant[1]));
 
   let stringCursor = 0,
     boardCursor = 0,
-    board = [];
+    board = new Array(64);
 
-  while (stringCursor < fenString.length && boardCursor < 64) {
-    let currentLetter = fenString[stringCursor];
+  while (stringCursor < positions.length && boardCursor < 64) {
+    let currentLetter = positions[stringCursor];
     if (isNaN(Number(currentLetter)) && currentLetter !== "/") {
-      board[boardCursor] = pieceTable[currentLetter];
+      let color =
+        positions[stringCursor].toUpperCase() === positions[stringCursor]
+          ? "w"
+          : "b";
+      board[boardCursor] = {
+        color,
+        piece: positions[stringCursor].toLowerCase(),
+      };
       stringCursor++;
       boardCursor++;
       continue;
@@ -31,7 +70,7 @@ export const fenToBoard = (fenString) => {
     if (!isNaN(Number(currentLetter))) {
       stringCursor++;
       for (let i = 0; i < currentLetter; i++) {
-        board[boardCursor] = 0;
+        board[boardCursor] = null;
         boardCursor++;
       }
       continue;
@@ -39,5 +78,11 @@ export const fenToBoard = (fenString) => {
     stringCursor++;
   }
 
-  return board;
+  return {
+    board,
+    whosMoveNext,
+    flags,
+    halfMove: Number(halfMove),
+    fullMove: Number(fullMove),
+  };
 };

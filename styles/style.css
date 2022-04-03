@@ -6,6 +6,7 @@
   --selected: #ebc934;
   --pastMove: #cfaf21;
   --kill: #eb4634;
+  --hoverColor: #ff8000;
 }
 
 html,
@@ -55,6 +56,11 @@ body {
   align-items: center;
   justify-content: center;
   position: relative;
+  box-sizing: border-box;
+}
+
+.box:hover {
+  border: 2px solid var(--hoverColor);
 }
 
 .row:first-child {
@@ -136,6 +142,13 @@ body {
     rgba(0, 0, 0, 0) 60%,
     var(--kill) 90%
   ) !important;
+}
+
+/* debug */
+.debugLabel {
+  position: absolute;
+  top: 0;
+  left: 0;
 }
 
 /* github corner */

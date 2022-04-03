@@ -1,43 +1,25 @@
-import { getMoves, getPieceType } from "./moves.js";
-import { printBoard, showIndexOfPlace } from "./debugTools/utils.js";
-import Board from "./board.js";
+import { showIndexOfPlace } from "./debugTools/utils.js";
+import Board from "./apis/board.js";
+import Chess from "./apis/chess.js";
+
+// start position fen
+const fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 
 const displayBoard = document.querySelectorAll(".box");
 const ChessBoard = new Board(displayBoard);
+let chess = new Chess(fen);
 
-// https://www.chess.com/terms/chess-piece-value
-// prettier-ignore
-export const board = [
-  15, 13, 14, 19, 10, 14, 13, 15, // +10 to represent black pieces
-  11, 11, 11, 11, 11, 11, 11, 11, 
-  0,  0,  0,  0,  0,  0,  0,  0,  
-  0,  0,  0,  0,  0,  0,  0,  0,  
-  0,  0,  0,  0,  0,  0,  0,  0,
-  0,  0,  0,  0,  0,  0,  0,  0,
-  21, 21, 21, 21, 21, 21, 21, 21, // +20 to represent white pieces
-  25, 23, 24, 29, 20, 24, 23, 25,
-];
-
-const restrictions = {
-  castling: {
-    white: {
-      canCastle: true,
-      left: true,
-      right: true,
-    },
-    black: {
-      canCastle: true,
-      left: true,
-      right: true,
-    },
-  },
-  enPassantKillable: null,
-};
+ChessBoard.boardFromFen(fen);
 
 window.enableDebugTools = () => {
   // enable debug tools
-  window.printBoard = printBoard;
-  window.boardFromFen = ChessBoard.fenToBoad();
+  window.printBoard = () => chess.printBoard();
+  window.fenToBoard = (fen) => {
+    ChessBoard.boardFromFen(fen);
+    chess = new Chess(fen);
+  };
+  window.displayRep = ChessBoard;
+  window.memoryRep = chess;
   showIndexOfPlace(displayBoard);
   return true;
 };
@@ -50,132 +32,38 @@ window.disableDebugTools = () => {
 
 const piece_placed_sound = new Audio("./assets/sounds/piece_placed.mp3");
 
-const pieceExistOnIndex = (index) => {
-  for (let child of displayBoard[index].children) {
-    if (child.nodeName === "IMG") {
-      return child;
-    }
-  }
-  return false;
-};
-
 // perform a move on click
-let pastBox = null;
 let pastIndex = null;
-let highLightedPlaces = {
-  moves: [],
-  kills: [],
-};
+let highLightedPlaces = [];
 
-const updateRestrictions = (currentPos, lastPos) => {
-  // updating restrictions
-  const movedPiece = getPieceType(currentPos);
-  if (movedPiece.type === "king") {
-    restrictions.castling[movedPiece.color].canCastle = false;
-  }
-
-  if (movedPiece.type === "rook") {
-    if (lastPos === 0 || lastPos === 56) {
-      restrictions.castling[movedPiece.color].left = false;
-    }
-    if (lastPos === 7 || lastPos === 63) {
-      restrictions.castling[movedPiece.color].right = false;
-    }
-  }
-};
-
-const clickMove = (box, index) => {
+const clickMove = (_, index) => {
   // if a piece was selected previously
-  if (pastBox !== null && pastBox !== box) {
+  if (pastIndex !== null && pastIndex !== index) {
     if (
-      !highLightedPlaces.moves.includes(index) &&
-      !highLightedPlaces.kills.includes(index)
+      !ChessBoard.possibleMoves.includes(index) &&
+      !ChessBoard.kills.includes(index)
     )
       return; // highlightedPlaces === LegalMoves
-    if (
-      getPieceType(pastIndex).type === "king" &&
-      Math.abs(index - pastIndex) === 2
-    ) {
-      // its a castling move
-      let castlingData = highLightedPlaces.castling;
-      board[index] = board[pastIndex];
-      board[pastIndex] = 0;
-
-      if (castlingData?.[index]?.side === "left") {
-        // castling on the left side
-        ChessBoard.movePiece(castlingData?.[index]?.rook, index + 1);
-        // update board representation
-        board[index + 1] = board[castlingData?.[index]?.rook];
-        board[castlingData?.[index]?.rook] = 0;
-      } else {
-        // castling on the right side
-        ChessBoard.movePiece(castlingData?.[index]?.rook, index - 1);
-        // update board representation
-        board[index - 1] = board[castlingData?.[index]?.rook];
-        board[castlingData?.[index]?.rook] = 0;
-      }
-      ChessBoard.movePiece(pastIndex, index); // move the king
-      ChessBoard.removeAllHighlights();
-      piece_placed_sound.play();
-      pastBox = null;
-      updateRestrictions(index, pastIndex);
-      restrictions.enPassantKillable = null;
-      return;
-    }
-    if (
-      getPieceType(pastIndex).type === "pawn" &&
-      highLightedPlaces?.enPassant?.[`${index}`]
-    ) {
-      // its en passant
-      ChessBoard.movePiece(pastIndex, index);
-      ChessBoard.removePiece(highLightedPlaces?.enPassant?.[`${index}`]?.kill);
-      board[index] = board[pastIndex];
-      board[highLightedPlaces?.enPassant?.[`${index}`]?.kill] = 0;
-      ChessBoard.removeAllHighlights();
-      piece_placed_sound.play();
-      board[pastIndex] = 0;
-      pastBox = null;
-      restrictions.enPassantKillable = null;
-      return;
-    }
-
-    restrictions.enPassantKillable = null;
-    // if its a pawn's 2 step move
-    if (
-      getPieceType(pastIndex).type === "pawn" &&
-      Math.abs(pastIndex - index) === 16
-    ) {
-      restrictions.enPassantKillable = index;
-    }
 
     ChessBoard.removeAllHighlights();
-    ChessBoard.movePiece(pastIndex, index);
-    board[index] = board[pastIndex];
+    const [move] = highLightedPlaces.filter((move) => move.to === index);
+    ChessBoard.doThisMove(move);
+    chess.doThisMove(move);
     piece_placed_sound.play();
-    updateRestrictions(index, pastIndex);
-    board[pastIndex] = 0;
-    pastBox = null;
+    pastIndex = null;
     return;
   }
   // if selected piece is selected again
-  if (pastBox !== null) {
+  if (pastIndex !== null) {
     ChessBoard.removeAllHighlights();
-    pastBox = null;
     pastIndex = null;
     return;
   }
   // if no piece was selected previously
-  if (!pastBox && pieceExistOnIndex(index)) {
+  if (pastIndex === null && ChessBoard.hasAPiece(index)) {
     ChessBoard.highLightPiece(index);
-    highLightedPlaces = getMoves(index, restrictions);
-    if (highLightedPlaces?.enPassant) {
-      Object.keys(highLightedPlaces.enPassant).forEach((place) => {
-        highLightedPlaces.moves.push(Number(place));
-      });
-    }
-    ChessBoard.highlightPlaces(highLightedPlaces.moves);
-    ChessBoard.highlightKills(highLightedPlaces.kills);
-    pastBox = box;
+    highLightedPlaces = chess.generateMoves(index);
+    ChessBoard.highlightPlaces(highLightedPlaces);
     pastIndex = index;
   }
 };
