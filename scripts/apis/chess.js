@@ -222,12 +222,12 @@ export default class Chess {
   }
 
   isCheckMate(king) {
-    return this.isInCheck(king) && this.generate_moves().length === 0;
+    return this.isInCheck(king) && this.generateMoves().length === 0;
   }
 
   isStaleMate(king) {
     // draw
-    return !this.isInCheck(king) && this.generate_moves().length === 0;
+    return !this.isInCheck(king) && this.generateMoves().length === 0;
   }
 
   isAttacked() {
