@@ -3,21 +3,21 @@ import { fenToBoard } from "../debugTools/fenString.js";
 
 const PieceImages = {
   w: {
-    k: "../../assets/images/king_white.png",
-    q: "../../assets/images/queen_white.png",
-    b: "../../assets/images/bishop_white.png",
-    n: "../../assets/images/knight_white.png",
-    r: "../../assets/images/rook_white.png",
-    p: "../../assets/images/pawn_white.png",
+    k: "./assets/images/king_white.png",
+    q: "./assets/images/queen_white.png",
+    b: "./assets/images/bishop_white.png",
+    n: "./assets/images/knight_white.png",
+    r: "./assets/images/rook_white.png",
+    p: "./assets/images/pawn_white.png",
   },
   // black pieces
   b: {
-    k: "../../assets/images/king_black.png",
-    q: "../../assets/images/queen_black.png",
-    b: "../../assets/images/bishop_black.png",
-    n: "../../assets/images/knight_black.png",
-    r: "../../assets/images/rook_black.png",
-    p: "../../assets/images/pawn_black.png",
+    k: "./assets/images/king_black.png",
+    q: "./assets/images/queen_black.png",
+    b: "./assets/images/bishop_black.png",
+    n: "./assets/images/knight_black.png",
+    r: "./assets/images/rook_black.png",
+    p: "./assets/images/pawn_black.png",
   },
 };
 
