@@ -134,9 +134,9 @@ export default class Chess {
     console.log(lastRow);
   }
 
-  generateMoves(position = null) {
+  generateMoves(position = null, legal = true) {
     // generate all possible moves for a side or for a single piece
-    const possibleMoves = [];
+    let possibleMoves = [];
     if (position !== null) {
       if (this.board[position].color !== this.currentTurn) return;
       for (let move of pieceMap[this.board[position].piece](
@@ -145,6 +145,28 @@ export default class Chess {
         this.flags
       )) {
         this.#addMove(position, move, possibleMoves);
+      }
+
+      // if psuedo legal moves are wanted
+      if (!legal) return possibleMoves;
+      const legalMoves = possibleMoves.filter((move) => {
+        if (this.isInCheck(this.currentTurn) && move?.castling) return false;
+        this.doThisMove(move);
+        if (this.isAttacked(this.#whoOpponent())) {
+          this.undoLastMove();
+          return false;
+        } else {
+          this.undoLastMove();
+          return true;
+        }
+      });
+      return legalMoves;
+    }
+
+    // generating all possible moves for a side [ can be improved with PieceList ]
+    for (let i = 0; i < 64; i++) {
+      if (this.board[i] && this.board[i]?.color === this.currentTurn) {
+        possibleMoves = possibleMoves.concat(this.generateMoves(i, legal));
       }
     }
     return possibleMoves;
@@ -258,7 +280,7 @@ export default class Chess {
             return true;
         } else {
           if (Math.floor((king + index) / 8) - 1 === Math.floor(king / 8))
-    return true;
+            return true;
         }
       }
     }
