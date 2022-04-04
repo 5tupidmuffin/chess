@@ -404,18 +404,22 @@ export const kingMoves = (startPosition, board, flags) => {
         if (board[i] !== null) continue out; // continue outer loop
       }
 
-      const label = position === 63 ? "whiteKingSide" : "blackKingSide";
+      const kingSideLabel =
+        self.color === "w" ? "whiteKingSide" : "blackKingSide";
+      const queenSideLabel =
+        self.color === "w" ? "whiteQueenSide" : "blackQueenSide";
 
       const newCastling = {
-        ...flags.restrictions.castling,
-        [label]: false,
+        [kingSideLabel]: false,
+        [queenSideLabel]: false,
       };
 
       moves.push({
         from: startPosition,
         to: startPosition + 2,
         castling: { from: position, to: startPosition + 1 },
-        flags: { ...flags, restrictions: newCastling },
+        flags,
+        ...newCastling,
       });
     }
 
@@ -430,18 +434,22 @@ export const kingMoves = (startPosition, board, flags) => {
         if (board[i] !== null) continue out; // continue outer loop
       }
 
-      const label = position === 56 ? "whiteQueenSide" : "blackQueenSide";
+      const kingSideLabel =
+        self.color === "w" ? "whiteKingSide" : "blackKingSide";
+      const queenSideLabel =
+        self.color === "w" ? "whiteQueenSide" : "blackQueenSide";
 
       const newCastling = {
-        ...flags.restrictions.castling,
-        [label]: false,
+        [kingSideLabel]: false,
+        [queenSideLabel]: false,
       };
 
       moves.push({
         from: startPosition,
         to: startPosition - 2,
         castling: { from: position, to: startPosition - 1 },
-        flags: { ...flags, restrictions: newCastling },
+        flags,
+        ...newCastling,
       });
     }
   }
