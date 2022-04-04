@@ -239,6 +239,13 @@ export default class Chess {
     return lastMove;
   }
 
+  isGameOver() {
+    return (
+      this.isCheckMate(this.isCheckMate(this.currentTurn)) ||
+      this.isStaleMate(this.currentTurn)
+    );
+  }
+
   isInCheck(king) {
     return this.isAttacked(king);
   }
