@@ -230,8 +230,75 @@ export default class Chess {
     return !this.isInCheck(king) && this.generateMoves().length === 0;
   }
 
-  isAttacked() {
+  isAttacked(kingColor) {
     // check if given king is attacked or not
+    let king = null;
+
+    for (let i = 0; i < 64; i++) {
+      if (
+        this.board[i] &&
+        this.board[i].color === kingColor &&
+        this.board[i].piece === "k"
+      ) {
+        king = i;
+        break;
+      }
+    }
+
+    if (king === null)
+      throw new Error(`no king found for specified color: ${kingColor}`);
+
+    // check for pawn enemies
+    const pawnMoves = kingColor === "w" ? [-7, -9] : [7, 9];
+    for (let index of pawnMoves) {
+      let enemy = this.board[king + index];
+      if (enemy && enemy.color !== kingColor && enemy.piece === "p") {
+        if (kingColor === "w") {
+          if (Math.floor((king + index) / 8) + 1 === Math.floor(king / 8))
+            return true;
+        } else {
+          if (Math.floor((king + index) / 8) - 1 === Math.floor(king / 8))
     return true;
+        }
+      }
+    }
+
+    // sliding enemies
+    const possibleSlidingEnemies = pieceMap
+      .r(king, this.board, {})
+      .filter(
+        ({ to }) =>
+          this.board[to] &&
+          this.board[to]?.color !== kingColor &&
+          (this.board[to]?.piece === "r" || this.board[to]?.piece === "q")
+      );
+
+    if (possibleSlidingEnemies.length) return true;
+
+    // diagonal enemies
+    const possibleDiagonalEnemies = pieceMap
+      .b(king, this.board, {})
+      .filter(
+        ({ to }) =>
+          this.board[to] &&
+          this.board[to]?.color !== kingColor &&
+          (this.board[to]?.piece === "b" || this.board[to]?.piece === "q")
+      );
+
+    if (possibleDiagonalEnemies.length) return true;
+
+    // knight enemies
+    const possibleKnightEnemies = pieceMap
+      .n(king, this.board, {})
+      .filter(
+        ({ to }) =>
+          this.board[to] &&
+          this.board[to]?.color !== kingColor &&
+          this.board[to]?.piece === "n"
+      );
+
+    if (possibleKnightEnemies.length) return true;
+
+    return false;
   }
 }
