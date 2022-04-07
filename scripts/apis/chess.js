@@ -78,6 +78,7 @@ export default class Chess {
       ...to,
       piece: this.board[from],
       from,
+      notation: this.moveNotation(from, to.to),
     };
 
     if (this.board[build.to]) {
@@ -329,5 +330,13 @@ export default class Chess {
     if (possibleKnightEnemies.length) return true;
 
     return false;
+  }
+
+  moveNotation(from, to) {
+    const chars = "abcdefgh";
+    const makeMove = (digit) => {
+      return `${chars[digit % 8]}${8 - Math.floor(digit / 8)}`;
+    };
+    return `${makeMove(from)}${makeMove(to)}`;
   }
 }
