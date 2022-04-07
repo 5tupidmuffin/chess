@@ -14,6 +14,32 @@ const pieceMap = {
   },
 };
 
+/* 
+  if the square on which the king stands, or the square which it must
+cross, or the square which it is to occupy, is attacked by one or more of
+the opponent's pieces,
+https://www.fide.com/FIDE/handbook/LawsOfChess.pdf
+*/
+const castlingFilter = (move, movesList) => {
+  if (!move?.castling) return true;
+  const { castling, from } = move;
+  if (from < castling.from) {
+    let inBetween = movesList.filter((move) => {
+      if (move.from === from && (move.to === from + 1 || move.to === from + 2))
+        return true;
+      return false;
+    });
+    return inBetween.length === 2 ? true : false;
+  } else {
+    let inBetween = movesList.filter((move) => {
+      if (move.from === from && (move.to === from - 1 || move.to === from - 2))
+        return true;
+      return false;
+    });
+    return inBetween.length === 2 ? true : false;
+  }
+};
+
 export default class Chess {
   // used Chess.js as reference
   constructor(fen) {
@@ -78,6 +104,7 @@ export default class Chess {
       ...to,
       piece: this.board[from],
       from,
+      notation: this.moveNotation(from, to.to),
     };
 
     if (this.board[build.to]) {
@@ -134,9 +161,9 @@ export default class Chess {
     console.log(lastRow);
   }
 
-  generateMoves(position = null) {
+  generateMoves(position = null, legal = true) {
     // generate all possible moves for a side or for a single piece
-    const possibleMoves = [];
+    let possibleMoves = [];
     if (position !== null) {
       if (this.board[position].color !== this.currentTurn) return;
       for (let move of pieceMap[this.board[position].piece](
@@ -145,6 +172,31 @@ export default class Chess {
         this.flags
       )) {
         this.#addMove(position, move, possibleMoves);
+      }
+
+      // if psuedo legal moves are wanted
+      if (!legal) return possibleMoves;
+      let legalMoves = possibleMoves.filter((move) => {
+        if (this.isInCheck(this.currentTurn) && move?.castling) return false;
+        this.doThisMove(move);
+        if (this.isAttacked(this.#whoOpponent())) {
+          this.undoLastMove();
+          return false;
+        } else {
+          this.undoLastMove();
+          return true;
+        }
+      });
+      legalMoves = legalMoves.filter((move) =>
+        castlingFilter(move, legalMoves)
+      );
+      return legalMoves;
+    }
+
+    // generating all possible moves for a side [ can be improved with PieceList ]
+    for (let i = 0; i < 64; i++) {
+      if (this.board[i] && this.board[i]?.color === this.currentTurn) {
+        possibleMoves = possibleMoves.concat(this.generateMoves(i, legal));
       }
     }
     return possibleMoves;
@@ -168,14 +220,14 @@ export default class Chess {
     }
 
     // if rooks move from initial position
-    if (move.whiteKingSide !== undefined)
+    if (move?.whiteKingSide !== undefined)
       this.flags.restrictions.castling.whiteKingSide = false;
-    if (move.whiteQueenSide !== undefined)
+    if (move?.whiteQueenSide !== undefined)
       this.flags.restrictions.castling.whiteQueenSide = false;
-    if (move.blackKingSide !== undefined)
-      this.flags.restrictions.castling.whiteKingSide = false;
-    if (move.blackQueenSide !== undefined)
-      this.flags.restrictions.castling.whiteQueenSide = false;
+    if (move?.blackKingSide !== undefined)
+      this.flags.restrictions.castling.blackKingSide = false;
+    if (move?.blackQueenSide !== undefined)
+      this.flags.restrictions.castling.blackQueenSide = false;
 
     if (move?.promotion) this.board[move.to] = move?.promotion;
 
@@ -217,21 +269,103 @@ export default class Chess {
     return lastMove;
   }
 
+  isGameOver() {
+    return (
+      this.isCheckMate(this.isCheckMate(this.currentTurn)) ||
+      this.isStaleMate(this.currentTurn)
+    );
+  }
+
   isInCheck(king) {
     return this.isAttacked(king);
   }
 
   isCheckMate(king) {
-    return this.isInCheck(king) && this.generate_moves().length === 0;
+    return this.isInCheck(king) && this.generateMoves().length === 0;
   }
 
   isStaleMate(king) {
     // draw
-    return !this.isInCheck(king) && this.generate_moves().length === 0;
+    return !this.isInCheck(king) && this.generateMoves().length === 0;
   }
 
-  isAttacked() {
+  isAttacked(kingColor) {
     // check if given king is attacked or not
-    return true;
+    let king = null;
+
+    for (let i = 0; i < 64; i++) {
+      if (
+        this.board[i] &&
+        this.board[i].color === kingColor &&
+        this.board[i].piece === "k"
+      ) {
+        king = i;
+        break;
+      }
+    }
+
+    if (king === null)
+      throw new Error(`no king found for specified color: ${kingColor}`);
+
+    // check for pawn enemies
+    const pawnMoves = kingColor === "w" ? [-7, -9] : [7, 9];
+    for (let index of pawnMoves) {
+      let enemy = this.board[king + index];
+      if (enemy && enemy.color !== kingColor && enemy.piece === "p") {
+        if (kingColor === "w") {
+          if (Math.floor((king + index) / 8) + 1 === Math.floor(king / 8))
+            return true;
+        } else {
+          if (Math.floor((king + index) / 8) - 1 === Math.floor(king / 8))
+            return true;
+        }
+      }
+    }
+
+    // sliding enemies
+    const possibleSlidingEnemies = pieceMap
+      .r(king, this.board, {})
+      .filter(
+        ({ to }) =>
+          this.board[to] &&
+          this.board[to]?.color !== kingColor &&
+          (this.board[to]?.piece === "r" || this.board[to]?.piece === "q")
+      );
+
+    if (possibleSlidingEnemies.length) return true;
+
+    // diagonal enemies
+    const possibleDiagonalEnemies = pieceMap
+      .b(king, this.board, {})
+      .filter(
+        ({ to }) =>
+          this.board[to] &&
+          this.board[to]?.color !== kingColor &&
+          (this.board[to]?.piece === "b" || this.board[to]?.piece === "q")
+      );
+
+    if (possibleDiagonalEnemies.length) return true;
+
+    // knight enemies
+    const possibleKnightEnemies = pieceMap
+      .n(king, this.board, {})
+      .filter(
+        ({ to }) =>
+          this.board[to] &&
+          this.board[to]?.color !== kingColor &&
+          this.board[to]?.piece === "n"
+      );
+
+    if (possibleKnightEnemies.length) return true;
+
+    return false;
+  }
+
+  moveNotation(from, to) {
+    const chars = "abcdefgh";
+    const makeMove = (digit) => {
+      return `${chars[digit % 8]}${8 - Math.floor(digit / 8)}`;
+    };
+    return `${makeMove(from)}${makeMove(to)}`;
   }
 }

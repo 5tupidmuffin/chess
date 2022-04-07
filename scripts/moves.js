@@ -128,7 +128,7 @@ export const pawnMoves = (startPosition, board, flags) => {
   const self = board[startPosition];
   let moves = [];
   if (self.color === "w") {
-    if (startPosition - 8 < 8) {
+    if (startPosition - 8 < 8 && !board[startPosition - 8]) {
       //   promotion
       moves = moves.concat(promotionMoves(startPosition - 8));
     }
@@ -153,7 +153,7 @@ export const pawnMoves = (startPosition, board, flags) => {
       Math.floor(startPosition / 8) - 1 === Math.floor((startPosition - 9) / 8)
     ) {
       if (startPosition - 9 < 8) {
-        moves.concat(promotionMoves(startPosition - 9));
+        moves = moves.concat(promotionMoves(startPosition - 9));
       } else {
         moves.push({ to: startPosition - 9, flags });
       }
@@ -164,7 +164,7 @@ export const pawnMoves = (startPosition, board, flags) => {
       Math.floor(startPosition / 8) - 1 === Math.floor((startPosition - 7) / 8)
     ) {
       if (startPosition - 7 < 8) {
-        moves.concat(promotionMoves(startPosition - 7));
+        moves = moves.concat(promotionMoves(startPosition - 7));
       } else {
         moves.push({ to: startPosition - 7, flags });
       }
@@ -201,7 +201,7 @@ export const pawnMoves = (startPosition, board, flags) => {
       }
     }
   } else {
-    if (startPosition + 8 >= 56) {
+    if (startPosition + 8 >= 56 && !board[startPosition + 8]) {
       //   promotion
       moves = moves.concat(promotionMoves(startPosition + 8));
     }
@@ -227,7 +227,7 @@ export const pawnMoves = (startPosition, board, flags) => {
       Math.floor(startPosition / 8) + 1 === Math.floor((startPosition + 9) / 8)
     ) {
       if (startPosition + 9 >= 56) {
-        moves.concat(promotionMoves(startPosition + 9));
+        moves = moves.concat(promotionMoves(startPosition + 9));
       } else {
         moves.push({ to: startPosition + 9, flags });
       }
@@ -239,7 +239,7 @@ export const pawnMoves = (startPosition, board, flags) => {
       Math.floor(startPosition / 8) + 1 === Math.floor((startPosition + 7) / 8)
     ) {
       if (startPosition + 7 >= 56) {
-        moves.concat(promotionMoves(startPosition + 7));
+        moves = moves.concat(promotionMoves(startPosition + 7));
       } else {
         moves.push({ to: startPosition + 7, flags });
       }
@@ -326,6 +326,23 @@ export const kingMoves = (startPosition, board, flags) => {
   let values = [1, -1, 8, -8, 7, -7, 9, -9];
 
   for (let value of values) {
+    if (
+      [7, 9].includes(value) &&
+      Math.floor(startPosition / 8) + 1 !==
+        Math.floor((startPosition + value) / 8)
+    )
+      continue;
+
+    if (
+      [-7, -9].includes(value) &&
+      Math.floor(startPosition / 8) - 1 !==
+        Math.floor((startPosition + value) / 8)
+    )
+      continue;
+
+    if (value === 1 && startPosition % 8 === 7) continue;
+    if (value === -1 && startPosition % 8 === 0) continue;
+
     const position = startPosition + value;
     if (position <= 63 && position >= 0) {
       if (board[position] === 0) {
