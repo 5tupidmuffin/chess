@@ -14,6 +14,32 @@ const pieceMap = {
   },
 };
 
+/* 
+  if the square on which the king stands, or the square which it must
+cross, or the square which it is to occupy, is attacked by one or more of
+the opponent's pieces,
+https://www.fide.com/FIDE/handbook/LawsOfChess.pdf
+*/
+const castlingFilter = (move, movesList) => {
+  if (!move?.castling) return true;
+  const { castling, from } = move;
+  if (from < castling.from) {
+    let inBetween = movesList.filter((move) => {
+      if (move.from === from && (move.to === from + 1 || move.to === from + 2))
+        return true;
+      return false;
+    });
+    return inBetween.length === 2 ? true : false;
+  } else {
+    let inBetween = movesList.filter((move) => {
+      if (move.from === from && (move.to === from - 1 || move.to === from - 2))
+        return true;
+      return false;
+    });
+    return inBetween.length === 2 ? true : false;
+  }
+};
+
 export default class Chess {
   // used Chess.js as reference
   constructor(fen) {
@@ -150,7 +176,7 @@ export default class Chess {
 
       // if psuedo legal moves are wanted
       if (!legal) return possibleMoves;
-      const legalMoves = possibleMoves.filter((move) => {
+      let legalMoves = possibleMoves.filter((move) => {
         if (this.isInCheck(this.currentTurn) && move?.castling) return false;
         this.doThisMove(move);
         if (this.isAttacked(this.#whoOpponent())) {
@@ -161,6 +187,9 @@ export default class Chess {
           return true;
         }
       });
+      legalMoves = legalMoves.filter((move) =>
+        castlingFilter(move, legalMoves)
+      );
       return legalMoves;
     }
 
@@ -191,14 +220,14 @@ export default class Chess {
     }
 
     // if rooks move from initial position
-    if (move.whiteKingSide !== undefined)
+    if (move?.whiteKingSide !== undefined)
       this.flags.restrictions.castling.whiteKingSide = false;
-    if (move.whiteQueenSide !== undefined)
+    if (move?.whiteQueenSide !== undefined)
       this.flags.restrictions.castling.whiteQueenSide = false;
-    if (move.blackKingSide !== undefined)
-      this.flags.restrictions.castling.whiteKingSide = false;
-    if (move.blackQueenSide !== undefined)
-      this.flags.restrictions.castling.whiteQueenSide = false;
+    if (move?.blackKingSide !== undefined)
+      this.flags.restrictions.castling.blackKingSide = false;
+    if (move?.blackQueenSide !== undefined)
+      this.flags.restrictions.castling.blackQueenSide = false;
 
     if (move?.promotion) this.board[move.to] = move?.promotion;
 
