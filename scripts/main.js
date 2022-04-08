@@ -11,6 +11,20 @@ let chess = new Chess(fen);
 
 ChessBoard.boardFromFen(fen);
 
+const modal = document.querySelector(".modal");
+let active = false;
+const showMessage = (message) => {
+  if (active || !message) return;
+  active = true;
+  modal.classList.toggle("hidden");
+  modal.textContent = message;
+
+  setTimeout(() => {
+    active = false;
+    modal.classList.toggle("hidden");
+  }, 3 * 1000);
+};
+
 window.enableDebugTools = () => {
   // enable debug tools
   window.printBoard = () => chess.printBoard();
@@ -51,6 +65,12 @@ const clickMove = (_, index) => {
     chess.doThisMove(move);
     piece_placed_sound.play();
     pastIndex = null;
+
+    if (chess.isGameOver()) {
+      if (chess.isStaleMate()) showMessage("its stalemate!");
+      if (chess.isCheckMate())
+        showMessage(`${chess.currentTurn === "w" ? "black" : "white"} wins`);
+    }
     return;
   }
   // if selected piece is selected again
