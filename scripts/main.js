@@ -1,6 +1,7 @@
 import { showIndexOfPlace } from "./debugTools/utils.js";
 import Board from "./apis/board.js";
 import Chess from "./apis/chess.js";
+import doRandomMove from "./comp/simple.js";
 
 // start position fen
 const fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
@@ -71,6 +72,13 @@ const clickMove = (_, index) => {
       if (chess.isCheckMate())
         showMessage(`${chess.currentTurn === "w" ? "black" : "white"} wins`);
     }
+
+    const randomMove = doRandomMove(chess.generateMoves());
+    if (randomMove) {
+      chess.doThisMove(randomMove);
+      ChessBoard.doThisMove(randomMove);
+    }
+
     return;
   }
   // if selected piece is selected again
