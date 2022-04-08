@@ -270,21 +270,18 @@ export default class Chess {
   }
 
   isGameOver() {
-    return (
-      this.isCheckMate(this.isCheckMate(this.currentTurn)) ||
-      this.isStaleMate(this.currentTurn)
-    );
+    return this.isCheckMate() || this.isStaleMate();
   }
 
-  isInCheck(king) {
+  isInCheck(king = this.currentTurn) {
     return this.isAttacked(king);
   }
 
-  isCheckMate(king) {
+  isCheckMate(king = this.currentTurn) {
     return this.isInCheck(king) && this.generateMoves().length === 0;
   }
 
-  isStaleMate(king) {
+  isStaleMate(king = this.currentTurn) {
     // draw
     return !this.isInCheck(king) && this.generateMoves().length === 0;
   }
