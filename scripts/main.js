@@ -1,7 +1,8 @@
 import { showIndexOfPlace } from "./debugTools/utils.js";
 import Board from "./apis/board.js";
 import Chess from "./apis/chess.js";
-import doRandomMove from "./comp/simple.js";
+import computerMove from "./comp/deduceMove.js";
+import { perftTest } from "../tests/test.js";
 
 // start position fen
 const fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
@@ -73,12 +74,15 @@ const clickMove = (_, index) => {
         showMessage(`${chess.currentTurn === "w" ? "black" : "white"} wins`);
     }
 
-    const randomMove = doRandomMove(chess.generateMoves());
-    if (randomMove) {
-      chess.doThisMove(randomMove);
-      ChessBoard.doThisMove(randomMove);
-    }
+    const comMove = computerMove(chess);
+    ChessBoard.doThisMove(comMove);
+    chess.doThisMove(comMove);
 
+    if (chess.isGameOver()) {
+      if (chess.isStaleMate()) showMessage("its stalemate!");
+      if (chess.isCheckMate())
+        showMessage(`${chess.currentTurn === "w" ? "black" : "white"} wins`);
+    }
     return;
   }
   // if selected piece is selected again
