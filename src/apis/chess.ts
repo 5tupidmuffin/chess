@@ -1,5 +1,5 @@
-import { fenToBoard } from "../debugTools/fenString.js";
-import * as moveGen from "../moves.js";
+import { fenToBoard } from "../debugTools/fenString";
+import * as moveGen from "./moves.helper";
 
 const pieceMap = {
   p: moveGen.pawnMoves,
@@ -7,7 +7,7 @@ const pieceMap = {
   b: moveGen.diagonalMoves,
   r: moveGen.slidingMoves,
   k: moveGen.kingMoves,
-  q: (position, board, flags) => {
+  q: (position: number, board: MemoryBoard, flags: Flags) => {
     return moveGen
       .slidingMoves(position, board, flags)
       .concat(moveGen.diagonalMoves(position, board, flags));
@@ -20,7 +20,7 @@ cross, or the square which it is to occupy, is attacked by one or more of
 the opponent's pieces,
 https://www.fide.com/FIDE/handbook/LawsOfChess.pdf
 */
-const castlingFilter = (move, movesList) => {
+const castlingFilter = (move: Move, movesList: Moves) => {
   if (!move?.castling) return true;
   const { castling, from } = move;
   if (from < castling.from) {
@@ -42,7 +42,15 @@ const castlingFilter = (move, movesList) => {
 
 export default class Chess {
   // used Chess.js as reference
-  constructor(fen) {
+  board: MemoryBoard;
+  currentTurn: pieceColors;
+  kings: Kings;
+  history: Moves;
+  flags: Flags;
+  halfMoves: number;
+  fullMoves: number;
+
+  constructor(fen: string) {
     this.board = new Array(64);
 
     this.currentTurn = "w";
@@ -76,18 +84,18 @@ export default class Chess {
     }
   }
 
-  #loadFen(fen) {
+  #loadFen(fen: string) {
     // load fen string
     ({
       board: this.board,
-      whosMoveNext: this.currentTurn,
+      nextPlayer: this.currentTurn,
       flags: this.flags,
       halfMove: this.halfMoves,
       fullMove: this.fullMoves,
     } = fenToBoard(fen));
   }
 
-  #addMove(from, to, movesList) {
+  #addMove(from: number, to: number | any, movesList: Moves) {
     // add a move in possible moves
     /*
       move = {
@@ -114,7 +122,7 @@ export default class Chess {
     movesList.push(build);
   }
 
-  #deepCopy(anything) {
+  #deepCopy(anything: any) {
     return JSON.parse(JSON.stringify(anything));
   }
 
@@ -127,12 +135,12 @@ export default class Chess {
     }
   }
 
-  #whoOpponent() {
+  #whoOpponent(): pieceColors {
     return this.currentTurn === "w" ? "b" : "w";
   }
 
   printBoard() {
-    const getPieceNotation = (pieceObj) => {
+    const getPieceNotation = (pieceObj: Piece) => {
       if (pieceObj === null) return "-";
       if (pieceObj.color === "w") {
         return pieceObj.piece.toUpperCase();
@@ -161,9 +169,9 @@ export default class Chess {
     console.log(lastRow);
   }
 
-  generateMoves(position = null, legal = true) {
+  generateMoves(position: number = null, legal = true): Moves {
     // generate all possible moves for a side or for a single piece
-    let possibleMoves = [];
+    let possibleMoves: Moves = [];
     if (position !== null) {
       if (this.board[position].color !== this.currentTurn) return;
       for (let move of pieceMap[this.board[position].piece](
@@ -202,7 +210,7 @@ export default class Chess {
     return possibleMoves;
   }
 
-  doThisMove(move) {
+  doThisMove(move: Move) {
     // perform a move
     this.board[move.to] = this.board[move.from];
 
@@ -236,7 +244,7 @@ export default class Chess {
     this.#changeTurn();
   }
 
-  undoLastMove() {
+  undoLastMove(): Move {
     // undo last performed move
     if (!this.history.length) return;
     let lastMove = this.history.pop();
@@ -269,7 +277,7 @@ export default class Chess {
     return lastMove;
   }
 
-  isGameOver() {
+  isGameOver(): boolean {
     return this.isCheckMate() || this.isStaleMate();
   }
 
@@ -286,7 +294,7 @@ export default class Chess {
     return !this.isInCheck(king) && this.generateMoves().length === 0;
   }
 
-  isAttacked(kingColor) {
+  isAttacked(kingColor: pieceColors) {
     // check if given king is attacked or not
     let king = null;
 
@@ -321,7 +329,7 @@ export default class Chess {
 
     // sliding enemies
     const possibleSlidingEnemies = pieceMap
-      .r(king, this.board, {})
+      .r(king, this.board, this.flags)
       .filter(
         ({ to }) =>
           this.board[to] &&
@@ -333,7 +341,7 @@ export default class Chess {
 
     // diagonal enemies
     const possibleDiagonalEnemies = pieceMap
-      .b(king, this.board, {})
+      .b(king, this.board, this.flags)
       .filter(
         ({ to }) =>
           this.board[to] &&
@@ -345,7 +353,7 @@ export default class Chess {
 
     // knight enemies
     const possibleKnightEnemies = pieceMap
-      .n(king, this.board, {})
+      .n(king, this.board, this.flags)
       .filter(
         ({ to }) =>
           this.board[to] &&
@@ -358,9 +366,9 @@ export default class Chess {
     return false;
   }
 
-  moveNotation(from, to) {
+  moveNotation(from: number, to: number): string {
     const chars = "abcdefgh";
-    const makeMove = (digit) => {
+    const makeMove = (digit: number) => {
       return `${chars[digit % 8]}${8 - Math.floor(digit / 8)}`;
     };
     return `${makeMove(from)}${makeMove(to)}`;

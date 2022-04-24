@@ -1,4 +1,4 @@
-export const fenToBoard = (fenString) => {
+export const fenToBoard = (fenString: string) => {
   const [
     positions,
     whosMoveNext,
@@ -8,9 +8,11 @@ export const fenToBoard = (fenString) => {
     fullMove,
   ] = fenString.split(" ");
 
+  const nextPlayer: pieceColors = whosMoveNext as pieceColors;
+
   if (fenString.split(" ").length !== 6) throw new Error("invalid fen string");
 
-  const flags = {
+  const flags: Flags = {
     enPassantSquare: null,
     restrictions: {
       castling: {
@@ -53,7 +55,7 @@ export const fenToBoard = (fenString) => {
     board = new Array(64);
 
   while (stringCursor < positions.length && boardCursor < 64) {
-    let currentLetter = positions[stringCursor];
+    let currentLetter = positions[stringCursor] as string | number;
     if (isNaN(Number(currentLetter)) && currentLetter !== "/") {
       let color =
         positions[stringCursor].toUpperCase() === positions[stringCursor]
@@ -80,7 +82,7 @@ export const fenToBoard = (fenString) => {
 
   return {
     board,
-    whosMoveNext,
+    nextPlayer,
     flags,
     halfMove: Number(halfMove),
     fullMove: Number(fullMove),

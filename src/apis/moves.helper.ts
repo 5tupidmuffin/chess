@@ -1,5 +1,9 @@
 // for rook and queen
-export const slidingMoves = (startPosition, board, flags) => {
+export const slidingMoves = (
+  startPosition: number,
+  board: MemoryBoard,
+  flags: Flags
+): rawMoves => {
   const moves = [];
   const self = board[startPosition];
   //horizontal moves
@@ -61,7 +65,11 @@ export const slidingMoves = (startPosition, board, flags) => {
 };
 
 // bishop and queen
-export const diagonalMoves = (startPosition, board, flags) => {
+export const diagonalMoves = (
+  startPosition: number,
+  board: MemoryBoard,
+  flags: Flags
+): rawMoves => {
   const moves = [];
   const self = board[startPosition];
   //   upper moves
@@ -105,15 +113,13 @@ export const diagonalMoves = (startPosition, board, flags) => {
   return moves;
 };
 
-export const pawnMoves = (startPosition, board, flags) => {
-  /*
-        TODO:
-        _ implement en passant
-        - implement promotion
-    */
-
+export const pawnMoves = (
+  startPosition: number,
+  board: MemoryBoard,
+  flags: Flags
+): rawMoves => {
   const promotionPieces = ["q", "r", "b", "n"];
-  const promotionMoves = (to) => {
+  const promotionMoves = (to: number) => {
     const promos = [];
     for (let piece of promotionPieces) {
       promos.push({
@@ -126,7 +132,7 @@ export const pawnMoves = (startPosition, board, flags) => {
   };
 
   const self = board[startPosition];
-  let moves = [];
+  let moves: rawMoves = [];
   if (self.color === "w") {
     if (startPosition - 8 < 8 && !board[startPosition - 8]) {
       //   promotion
@@ -278,7 +284,11 @@ export const pawnMoves = (startPosition, board, flags) => {
   return moves;
 };
 
-export const knightMoves = (startPosition, board, flags) => {
+export const knightMoves = (
+  startPosition: number,
+  board: MemoryBoard,
+  flags: Flags
+): rawMoves => {
   const moves = [];
   const self = board[startPosition];
   let values = [6, 10, 15, 17];
@@ -319,7 +329,11 @@ export const knightMoves = (startPosition, board, flags) => {
   return moves;
 };
 
-export const kingMoves = (startPosition, board, flags) => {
+export const kingMoves = (
+  startPosition: number,
+  board: MemoryBoard,
+  flags: Flags
+): rawMoves => {
   const moves = [];
 
   const self = board[startPosition];
@@ -345,7 +359,7 @@ export const kingMoves = (startPosition, board, flags) => {
 
     const position = startPosition + value;
     if (position <= 63 && position >= 0) {
-      if (board[position] === 0) {
+      if (board[position] === null) {
         const queenSide =
             self.color === "w" ? "whiteQueenSide" : "blackQueenSide",
           kingSide = self.color === "w" ? "whiteKingSide" : "blackKingSide";
@@ -404,7 +418,7 @@ export const kingMoves = (startPosition, board, flags) => {
     if (!kingAtStart) break; // if king isnt on the start position no castling
     if (
       board[position] === null ||
-      (board[position]?.type?.toLowerCase() !== "r" &&
+      (board[position]?.piece?.toLowerCase() !== "r" &&
         board[position]?.color !== self.color)
     )
       continue;

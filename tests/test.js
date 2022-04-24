@@ -1,5 +1,5 @@
 // simple script to perform simple tests
-import Chess from "../scripts/apis/chess.js";
+import Chess from "../scripts/apis/chess";
 
 let total = 0,
   passed = 0,
@@ -64,7 +64,7 @@ export const perftTest = (depth, chessInstance = new Chess(), flag = true) => {
   return numberOfMoves;
 };
 
-export default () => {
+const tests = () => {
   PerformTest(
     "BoardGeneration With Fen",
     () => {
@@ -273,3 +273,5 @@ export default () => {
     Passed Tests          - ${passed}  
   `);
 };
+
+tests();

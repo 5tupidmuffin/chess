@@ -1,7 +1,7 @@
-import { showIndexOfPlace } from "./debugTools/utils.js";
-import Board from "./apis/board.js";
-import Chess from "./apis/chess.js";
-import doRandomMove from "./comp/simple.js";
+import { showIndexOfPlace } from "./debugTools/utils";
+import Board from "./apis/board";
+import Chess from "./apis/chess";
+import computerMove from "./comp/deduceMove";
 
 // start position fen
 const fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
@@ -14,7 +14,7 @@ ChessBoard.boardFromFen(fen);
 
 const modal = document.querySelector(".modal");
 let active = false;
-const showMessage = (message) => {
+const showMessage = (message: string): void => {
   if (active || !message) return;
   active = true;
   modal.classList.toggle("hidden");
@@ -26,7 +26,7 @@ const showMessage = (message) => {
   }, 3 * 1000);
 };
 
-window.enableDebugTools = () => {
+window.enableDebugTools = (): boolean => {
   // enable debug tools
   window.printBoard = () => chess.printBoard();
   window.fenToBoard = (fen) => {
@@ -39,7 +39,7 @@ window.enableDebugTools = () => {
   return true;
 };
 
-window.disableDebugTools = () => {
+window.disableDebugTools = (): boolean => {
   // disble debug tools
   delete window?.printBoard;
   return true;
@@ -48,10 +48,10 @@ window.disableDebugTools = () => {
 const piece_placed_sound = new Audio("./assets/sounds/piece_placed.mp3");
 
 // perform a move on click
-let pastIndex = null;
-let highLightedPlaces = [];
+let pastIndex: number = null;
+let highLightedPlaces: Moves = [];
 
-const clickMove = (_, index) => {
+const clickMove = (_: HTMLElement, index: number) => {
   // if a piece was selected previously
   if (pastIndex !== null && pastIndex !== index) {
     if (
@@ -73,12 +73,15 @@ const clickMove = (_, index) => {
         showMessage(`${chess.currentTurn === "w" ? "black" : "white"} wins`);
     }
 
-    const randomMove = doRandomMove(chess.generateMoves());
-    if (randomMove) {
-      chess.doThisMove(randomMove);
-      ChessBoard.doThisMove(randomMove);
-    }
+    const comMove = computerMove(chess);
+    ChessBoard.doThisMove(comMove);
+    chess.doThisMove(comMove);
 
+    if (chess.isGameOver()) {
+      if (chess.isStaleMate()) showMessage("its stalemate!");
+      if (chess.isCheckMate())
+        showMessage(`${chess.currentTurn === "w" ? "black" : "white"} wins`);
+    }
     return;
   }
   // if selected piece is selected again
@@ -96,6 +99,6 @@ const clickMove = (_, index) => {
   }
 };
 
-displayBoard.forEach((box, index) => {
+displayBoard.forEach((box: HTMLElement, index: number) => {
   box.onclick = () => clickMove(box, index);
 });

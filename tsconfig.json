@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "outDir": "public/build",
+    "noImplicitAny": true,
+    "lib": ["es6", "dom", "DOM.Iterable", "es2017"],
+    "module": "es6",
+    "target": "es6",
+    "allowJs": true,
+    "moduleResolution": "node",
+    "typeRoots": ["./node_modules/@types", "./types"]
+  }
+}
