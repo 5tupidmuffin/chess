@@ -8,10 +8,13 @@ const destDir = path.resolve(__dirname, "build");
 fs.copySync(srcDir, destDir, { overwrite: true }, (err) => {
   if (err) {
     console.log(err);
-  } else {
-    console.log("copied ./public to ./build");
   }
 });
+console.log("copied ./public to ./build");
 
-ghPages.publish("build", (err) => console.log);
+ghPages.publish("build", (err) => {
+  if (err) {
+    throw err;
+  }
+});
 console.log("deployed oh github pages");

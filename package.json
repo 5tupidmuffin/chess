@@ -7,11 +7,10 @@
     "test": "tests"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "node ./tests/test",
     "build": "webpack --mode=production",
     "dev": "webpack serve --mode=development",
-    "deploy": "npm run build && node deploy",
-    "test": "node ./tests/test"
+    "deploy": "npm run build && node deploy"
   },
   "repository": {
     "type": "git",
@@ -28,6 +27,7 @@
   },
   "homepage": "https://github.com/5tupidmuffin/chess#readme",
   "devDependencies": {
+    "@types/node": "^17.0.25",
     "fs-extra": "^8.1.0",
     "gh-pages": "^3.2.3",
     "ts-loader": "^9.2.8",
