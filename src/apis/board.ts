@@ -1,5 +1,5 @@
 // API to manipulate html board element
-import { fenToBoard } from "../debugTools/fenString.js";
+import { fenToBoard } from "../debugTools/fenString";
 
 const PieceImages = {
   w: {
@@ -22,7 +22,13 @@ const PieceImages = {
 };
 
 export default class Board {
-  constructor(htmlBoardElement = document.querySelector(".board")) {
+  board: NodeList;
+  selectedPiece: number;
+  possibleMoves: number[];
+  kills: number[];
+  pastMove: number[];
+
+  constructor(htmlBoardElement: NodeList) {
     this.board = htmlBoardElement;
     this.selectedPiece = null;
     this.possibleMoves = [];
@@ -30,30 +36,33 @@ export default class Board {
     this.pastMove = [];
   }
 
-  #turnOn(places, cssSelector) {
+  #turnOn(places: number[], cssSelector: string) {
     if (!places) return;
     for (let idx of places) {
-      this.board[idx].classList.add(cssSelector);
+      const box = <HTMLElement>this.board[idx];
+      box.classList.add(cssSelector);
     }
   }
 
-  #turnOff(places, cssSelector) {
+  #turnOff(places: number[], cssSelector: string) {
     if (!places) return;
     for (let idx of places) {
-      this.board[idx].classList.remove(cssSelector);
+      const box = <HTMLElement>this.board[idx];
+      box.classList.remove(cssSelector);
     }
   }
 
-  hasAPiece(position) {
-    for (let child of this.board[position].children) {
+  hasAPiece(position: number): boolean {
+    const box = <HTMLElement>this.board[position];
+    for (let child of box.children) {
       if (child.nodeName === "IMG") return true;
     }
     return false;
   }
 
-  #filterMoves(MovesObjects) {
-    let moves = [],
-      kills = [];
+  #filterMoves(MovesObjects: Moves) {
+    let moves: number[] = [],
+      kills: number[] = [];
     if (!MovesObjects) return { moves, kills };
     moves = MovesObjects.filter((move) => !move?.kill).map((move) => move.to);
     kills = MovesObjects.filter((move) => move?.kill).map((move) => move.to);
@@ -63,7 +72,7 @@ export default class Board {
     };
   }
 
-  highLightPiece(position) {
+  highLightPiece(position: number) {
     // highlight clicked piece
     this.selectedPiece = position;
     this.#turnOn([this.selectedPiece], "selected");
@@ -76,7 +85,7 @@ export default class Board {
     this.selectedPiece = null;
   }
 
-  highlightPlaces(arrayOfPositions) {
+  highlightPlaces(arrayOfPositions: Moves) {
     // highlight possible moves and kills
     const { moves, kills } = this.#filterMoves(arrayOfPositions);
     this.possibleMoves = moves;
@@ -100,7 +109,7 @@ export default class Board {
     this.removeHighlightedPlaces();
   }
 
-  movePiece(fromHere, toHere) {
+  movePiece(fromHere: number, toHere: number) {
     // perform a move
     if (this.pastMove.length) this.#turnOff(this.pastMove, "pastMove");
     let pieceToBeMoved = this.removePiece(fromHere);
@@ -110,7 +119,7 @@ export default class Board {
     this.#turnOn(this.pastMove, "pastMove");
   }
 
-  doThisMove(move) {
+  doThisMove(move: Move) {
     if (move?.enPassantKill) this.removePiece(move.enPassantKill);
     if (move?.castling) {
       this.movePiece(move.castling.from, move.castling.to);
@@ -121,10 +130,11 @@ export default class Board {
     }
   }
 
-  removePiece(fromHere) {
+  removePiece(fromHere: number) {
     // remove a piece from board
     let pieceToBeRemoved = null;
-    for (let child of this.board[fromHere].children) {
+    let box = <HTMLElement>this.board[fromHere];
+    for (let child of box.children) {
       if (child.nodeName === "IMG") {
         pieceToBeRemoved = this.board[fromHere].removeChild(child);
         break;
@@ -133,14 +143,14 @@ export default class Board {
     return pieceToBeRemoved;
   }
 
-  addPiece(here, color, type) {
+  addPiece(here: number, color: pieceColors, type: PieceTypes) {
     this.removePiece(here);
     const el = document.createElement("img");
     el.src = PieceImages[color][type];
     this.board[here].appendChild(el);
   }
 
-  boardFromFen(fenString) {
+  boardFromFen(fenString: string) {
     // construct a board from fen string
     let compBoard = [];
     ({ board: compBoard } = fenToBoard(fenString));

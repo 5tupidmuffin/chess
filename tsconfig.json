@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "outDir": "public/dist",
+    "noImplicitAny": true,
+    "module": "es6",
+    "target": "es6",
+    "allowJs": true,
+    "moduleResolution": "node",
+    "typeRoots": ["./node_modules/@types", "./types"]
+  }
+}

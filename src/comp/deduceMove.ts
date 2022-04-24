@@ -1,8 +1,9 @@
-import minimax from "./minimax.js";
-import moveSort from "./moveSort.js";
+import minimax from "./minimax";
+import moveSort from "./moveSort";
+import Chess from "../apis/chess";
 
 // return move from computer's side
-const deduceMove = (chess) => {
+const deduceMove = (chess: Chess): Move => {
   let moves = chess.generateMoves();
   moveSort(moves, 0, moves.length - 1);
   let bestValue = -Infinity;

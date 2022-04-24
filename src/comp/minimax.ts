@@ -1,4 +1,5 @@
-import moveSort from "./moveSort.js";
+import moveSort from "./moveSort";
+import Chess from "../apis/chess";
 
 const piecesValue = {
   q: 2000,
@@ -9,7 +10,7 @@ const piecesValue = {
   k: 5000,
 };
 
-const calcMaterial = (board, color) => {
+const calcMaterial = (board: MemoryBoard, color: pieceColors): number => {
   let black = 0;
   let white = 0;
   for (let piece of board) {
@@ -21,8 +22,9 @@ const calcMaterial = (board, color) => {
   return color === "w" ? -1 * value : value;
 };
 
-const evaluatePosition = (chess, color) => {
-  let opponentColor = color === "w" ? "b" : "w";
+const evaluatePosition = (chess: Chess, color: pieceColors): number => {
+  let opponentColor =
+    color === "w" ? ("b" as pieceColors) : ("w" as pieceColors);
   if (chess.isCheckMate(color)) return Number.NEGATIVE_INFINITY;
   if (chess.isInCheck(color)) return -5000;
   if (chess.isCheckMate(opponentColor)) return Number.POSITIVE_INFINITY;
@@ -32,7 +34,13 @@ const evaluatePosition = (chess, color) => {
 };
 
 // minimax
-const minimax = (chess, depth, alpha, beta, color) => {
+const minimax = (
+  chess: Chess,
+  depth: number,
+  alpha: number,
+  beta: number,
+  color: boolean
+) => {
   if (depth === 0 || chess.isGameOver()) {
     return evaluatePosition(chess, color ? "w" : "b");
   }

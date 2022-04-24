@@ -11,7 +11,7 @@ const piecesValue = {
     quicksort but for moves
     algo based on psuedocode from https://en.wikipedia.org/wiki/Quicksort
 */
-const moveSort = (moves, low, high) => {
+const moveSort = (moves: Moves, low: number, high: number): void => {
   if (low >= high || low < 0) return;
   const p = partition(moves, low, high);
 
@@ -19,7 +19,7 @@ const moveSort = (moves, low, high) => {
   moveSort(moves, p + 1, high);
 };
 
-const partition = (moves, low, high) => {
+const partition = (moves: Moves, low: number, high: number): number => {
   let i = low - 1;
 
   for (let j = low; j < high; j++) {
@@ -40,7 +40,7 @@ const partition = (moves, low, high) => {
   return i;
 };
 
-const swap = (array, idx1, idx2) => {
+const swap = (array: Moves, idx1: number, idx2: number): void => {
   let temp = array[idx1];
   array[idx1] = array[idx2];
   array[idx2] = temp;
